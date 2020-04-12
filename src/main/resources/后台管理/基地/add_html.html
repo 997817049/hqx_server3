@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <title>新增html</title>
+    <link rel="stylesheet" type="text/css" href="../public/layui/css/layui.css">
+    <link href="../public/css/common.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../public/css/nav.css">
+    <link rel="stylesheet" type="text/css" href="../public/css/iconfont.css">
+    <link href="../public/css/add.css" type="text/css" rel="stylesheet">
+    <script src="../public/js/public.js"></script>
+    <script src="../public/js/jquery-3.2.1.min.js"></script>
+    <script src="../public/layui/layui.js"></script>
+    <script src="../public/js/alert.js"></script>
+    <script src="../public/js/spark-md5.min.js"></script>
+    <script src="../public/js/echarts.min.js"></script>
+    <script type="text/javascript" src="../public/js/nav.js"></script>
+    <script type="text/javascript" src="../wangEditor.js"></script>
+</head>
+<body>
+<!-- 头部导航 -->
+<div class="jzy_w_max jzy_h_50 br_12">
+    <!-- LOGO -->
+    <div class="jzy_w_50 jzy_h_50 br_12 br_11_hove lt logo">
+        <a href=""><img src="../public/images/aliyun.png"></a>
+    </div>
+    <!--菜单1-->
+    <div class="jzy_w_90 jzy_h_50 br_12 br_11_hove lt top-txt">
+        <a class="cr_h_0 fs_14" href="">管理控制台</a>
+    </div>
+
+    <!--头像-->
+    <div class="jzy_w_50 jzy_h_50 br_12 br_11_hove rt top-txt logo">
+        <img class="jzy_boy_18" src="../public/images/touxiang.jpg" width="36" height="36">
+        <!-- 头像下拉菜单 -->
+        <div class="jzy_w_270 jzy_h_408 br_h_0 top_nav">
+            <!--头像跟用户名-->
+            <div class="jzy_w_max jzy_h_50 lt" style="margin-top: 15px"><img class="jzy_boy_18"
+                                                                             src="../public/images/touxiang.jpg"
+                                                                             width="36" height="36"></div>
+            <div class="jzy_w_max jzy_h_30 lt" style="line-height: 30px; border-bottom: 1px solid #e2e2e2">
+                1731223728@qq.com
+            </div>
+            <!--用户公共操作权限-->
+            <div class="jzy_w_250 jzy_h_250 lt" style="padding: 10px">
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/jbzl.png"></p>基本资料</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/smrz.png"></p>实名认证</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/aqsz.png"></p>安全设置</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/fxgk.png"></p>风险管控</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/fwkz.png"></p>访问控制</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/api.png"></p>API接口</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/hyqy.png"></p>会员权益</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/hyjf.png"></p>会员积分</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/wjgl.png"></p>文件管理</a>
+                </div>
+            </div>
+            <!--退出登录-->
+            <div class="jzy_w_max jzy_h_42 lt br_h_9" style="background: #f5f5f6; line-height: 45px"><a
+                    href="../login.html">退出管理控制台</a></div>
+        </div>
+    </div>
+
+    <!--菜单2-->
+    <div class="jzy_w_90 jzy_h_50 br_12 br_11_hove rt top-txt">
+        <a class="cr_h_0 fs_14">语言选择</a>
+        <!-- 头像下拉菜单 -->
+        <div class="jzy_w_90 br_h_0 top_nav nav2">
+            <p class="p"><a href="">简体中文</a></p>
+            <p class="p"><a href="">English</a></p>
+        </div>
+    </div>
+
+    <!--菜单3-->
+    <div class="jzy_w_90 jzy_h_50 br_12 br_11_hove rt top-txt">
+        <a class="cr_h_0 fs_14">权限设置</a>
+        <!-- 头像下拉菜单 -->
+        <div class="jzy_w_90 br_h_0 top_nav nav2">
+            <p class="p"><a href="">新建权限</a></p>
+            <p class="p"><a href="">角色列表</a></p>
+            <p class="p"><a href="">部门管理</a></p>
+        </div>
+    </div>
+
+</div>
+
+<!--左侧主导航-->
+<div class="jzy_w_180 lt main_height main_left nav" style="background: #333744">
+
+    <div class="nav-top">
+        <div id="mini" style="background: #4a5064; text-align: center"><img src="../public/images/icon/suofang.png"
+                                                                            width="20"></div>
+    </div>
+    <ul>
+        <li class="nav-item">
+            <a href="javascript:"><i class="my-icon nav-icon icon_1"></i><span>新闻模块</span><i
+                    class="my-icon nav-more"></i></a>
+            <ul>
+                <li><a href="../新闻/adm_news.html"><span>新闻</span></a></li>
+                <li><a href="../新闻/adm_character.html"><span>人物</span></a></li>
+                <li><a href="../新闻/adm_military.html"><span>军事</span></a></li>
+                <li><a href="../新闻/adm_history.html"><span>史实</span></a></li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <a href="javascript:"><i class="my-icon nav-icon icon_1"></i><span>基地模块</span><i
+                    class="my-icon nav-more"></i></a>
+            <ul>
+                <!--<li><a href="../基地/add_base.html"><span>新增景点</span></a></li>-->
+                <li><a href="../基地/adm_base.html"><span>基地</span></a></li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <a href="javascript:"><i class="my-icon nav-icon icon_1"></i><span>学习模块</span><i
+                    class="my-icon nav-more"></i></a>
+            <ul>
+                <li><a href="../学习/adm_exam.html"><span>答题</span></a></li>
+                <li><a href="../学习/adm_book.html"><span>书籍</span></a></li>
+                <li><a href="../学习/adm_teleplay.html"><span>电视</span></a></li>
+                <li><a href="../学习/adm_film.html"><span>电影</span></a></li>
+                <li><a href="../学习/adm_variety.html"><span>综艺</span></a></li>
+                <li><a href="../学习/adm_documentary.html"><span>纪录片</span></a></li>
+                <li><a href="../学习/adm_drama.html"><span>歌舞剧</span></a></li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<!--左侧次导航-->
+<div class="jzy_w_180 lt main_height main_nav" style="background: #D9DEE4">
+    <div class="jzy_w_150 jzy_h_70 fs_13 lt" style="font-weight: bold; line-height: 70px;padding-left: 30px">基地管理</div>
+    <div class="jzy_w_180 fs_13 lt main_height2" style="background: #EAEDF1;">
+        <div class="jzy_w_130 jzy_h_40 fs_12 lt" style="line-height: 40px;padding-left: 50px"><a href="statistics_base.html">基地概况</a>
+        </div>
+        <div class="jzy_w_130 jzy_h_40 fs_12 lt br_h_0 lt" style="line-height: 40px;padding-left: 50px"><a href="">新增基地</a>
+        </div>
+        <div class="jzy_w_130 jzy_h_40 fs_12 lt" style="line-height: 40px;padding-left: 50px"><a href="adm_base.html">基地列表</a>
+        </div>
+    </div>
+</div>
+
+<!--主内容框架-->
+<div class="main_height main_index lt" style="background: #f2f4f8;">
+    <div class="layui-btn-group demoTable jzy_w_max br_h_0 tabTop">
+        <span>新增景点</span>
+    </div>
+    <div class="tree_left" style="width: 100%">
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+            <legend>新增景点</legend>
+        </fieldset>
+        <div class="layui-form" style="width: 90%">
+            <!--编辑框-->
+            <div id="editor-wrapper" style="font-size: 15px; margin-left: 5%;">
+                <div id="editor" style="margin-bottom: 10px;">
+                    <div id="title_bar_wrapper" style="position: absolute; left:0; top: 0; flex: 1; width: 100%; height: 48px; background-color: white; box-shadow: 0 5px 5px rgba(0, 0, 0, .15); display: flex;">
+                        <div style="flex: 30px 0 1; display: flex; line-height: 48px;">
+                            <span class="icon iconback"  style="font-size: 25px;" onclick="finish()"></span>
+                        </div>
+                        <div id="title-html" style="line-height: 48px;font-size: 18px;">
+                            标题
+                        </div>
+                        <div style="flex: 1; display: flex; line-height: 48px; justify-content: flex-end; margin-right: 15px;">
+                            <span id="collect" class="icon iconmark" style="font-size: 27px;" onclick="dealCollect()"></span>
+                            <span class="icon iconmore" style="font-size: 22px;" onclick=""></span>
+                        </div>
+                    </div>
+                    <div style="height: 60px;"></div>
+                    <div>更多详情: 【官网】</div>
+                </div>
+            </div>
+            <!--按钮-->
+            <div class="layui-form-item" id="finish-wrapper">
+                <div class="layui-input-block" style="float: right">
+                    <button id="submit" class="layui-btn layui-btn-normal" onclick="dealSubmit()">
+                        提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    formData = new FormData(); //创建FormData对象
+    picFormData = new FormData(); //创建FormData对象
+    isPicAvailable = false;
+
+    layui.use(['form', 'table', 'tree'], function () {
+        form = layui.form;
+    });
+
+    dealEditor();
+
+    function dealSubmit() {
+        editor.txt.append("<script type=\"text/javascript\" src=\"http://192.168.0.103:8000/resource/files/base/jquery-1.7.1.min.js\"><" + "/script>");
+        editor.txt.append("<script type=\"text/javascript\" src=\"http://192.168.0.103:8000/resource/files/base/base.js\"><" + "/script>");
+        editor.txt.append("<link href=\"http://192.168.0.103:8000/resource/files/base/icon/iconfont.css\" type=\"text/css\" rel=\"stylesheet\"/>");
+        editor.txt.append("<link href=\"http://192.168.0.103:8000/resource/files/base/base.css\" type=\"text/css\" rel=\"stylesheet\"/>");
+
+        var html = editor.txt.html();
+        var htmlFormData = new FormData();
+        htmlFormData.set("html", html);
+        console.log("发送html");
+        $.ajax({
+            type: "POST",
+            url: serverIp + "upload/html", // 后端服务器上传地址
+            data: htmlFormData,
+            cache: false, // 是否缓存
+            async: true, // 是否异步执行
+            processData: false, // 是否处理发送的数据  (必须false才会避开jQuery对 formdata 的默认处理)
+            contentType: false, // 是否设置Content-Type请求头
+            success: function (rs) {
+                if(rs.num === 1) {
+                    alert("上传失败");
+                    return;
+                }
+                rs = rs.data;
+                formData.set("html", rs);
+                alert("上传html成功 路径" + rs);
+                console.log("上传html成功 路径" + rs)
+            },
+            error: function () {}
+        })
+    }
+
+    //处理编辑器
+    function dealEditor() {
+        // var title_txt = document.getElementById("title").value;
+        // $("#editor-content-title").html(title_txt);
+        var E = window.wangEditor;
+        editor = new E('#editor'); // 两个参数也可以传入 elem 对象，class 选择器
+        editor.customConfig.debug = true;//开启debug模式
+        editor.customConfig.pasteFilterStyle = false; // 关闭粘贴内容中的样式
+        editor.customConfig.pasteIgnoreImg = true;// 忽略粘贴内容中的图片
+        //editor.customConfig.uploadImgShowBase64 = true// 使用 base64 保存图片
+        editor.customConfig.showLinkImg = false;// 隐藏“网络图片”tab
+        // 关闭菜单栏fixed
+        editor.customConfig.menuFixed = false;
+
+        // 上传图片到服务器
+        editor.customConfig.uploadFileName = 'pic'; //设置文件上传的参数名称
+        editor.customConfig.uploadImgServer = serverIp + 'upload/pic'; //设置上传文件的服务器路径
+        editor.customConfig.uploadImgMaxSize = 3 * 1024 * 1024; // 将图片大小限制为 3M
+        editor.customConfig.uploadImgMaxLength = 1;
+
+        // 自定义图片上传
+        editor.customConfig.customUploadImg = function (files, insert) {
+            // files 是 input 中选中的文件列表
+            // 注意这里 files 中的第 0 个元素才是当前上传的文件对象
+            // insert 是获取图片 url 后，插入到编辑器的方法
+            var file = files[0];
+            var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;
+            var chunkSize = 2097152, // read in chunks of 2MB
+                chunks = Math.ceil(file.size / chunkSize),
+                currentChunk = 0,
+                spark = new SparkMD5.ArrayBuffer(),
+                frOnload = function(e){
+                    spark.append(e.target.result); // append array buffer
+                    currentChunk++;
+                    if (currentChunk < chunks)
+                        loadNext();
+                    else{
+                        var md5 = spark.end();
+                        console.log("\n加载结束 :\n\n计算后的文件md5:\n"+md5);
+                        var formData = new FormData();
+                        formData.set("md5", md5);
+                        formData.set("pic", file);
+                        $.ajax({
+                            type: "POST",
+                            url: serverIp + "upload/pic", // 后端服务器上传地址
+                            data: formData,
+                            cache: false, // 是否缓存
+                            async: true, // 是否异步执行
+                            processData: false, // 是否处理发送的数据  (必须false才会避开jQuery对 formdata 的默认处理)
+                            contentType: false, // 是否设置Content-Type请求头
+                            success: function (rs) {
+                                rs = rs.data;
+                                console.log("插入" + rs)
+                                editor.cmd.do("insertHTML", "<img style=\"width: 95%;height: 220px;margin-left: 2%;margin-top: 10px;\" src=\"" + (nginxIp + rs) + "\"/>")
+                            },
+                            error: function () {
+                            }
+                        });
+                    }
+                },
+                frOnerror = function () {
+                    console.log("糟糕，好像哪里错了.");
+                };
+            function loadNext() {
+                var fileReader = new FileReader();
+                fileReader.onload = frOnload;
+                fileReader.onerror = frOnerror;
+                var start = currentChunk * chunkSize,
+                    end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
+                fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
+            };
+            loadNext();
+        };
+
+        //自定义上传图片事件
+        editor.customConfig.uploadImgHooks = {
+            before: function (xhr, editor, files) {},
+            success: function (xhr, editor, result) {
+                console.log("上传成功");
+            },
+            fail: function (xhr, editor, result) {
+                console.log("上传失败,原因是" + result);
+            },
+            error: function (xhr, editor) {
+                console.log("上传出错");
+            },
+            timeout: function (xhr, editor) {
+                console.log("上传超时");
+            },
+
+            // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
+            // （但是，服务器端返回的必须是一个 JSON 格式字符串！！！否则会报错）
+            customInsert: function (insertImg, result, editor) {
+                // 图片上传并返回结果，自定义插入图片的事件（而不是编辑器自动插入图片！！！）
+                // insertImg 是插入图片的函数，editor 是编辑器对象，result 是服务器端返回的结果
+
+                // 举例：假如上传图片成功后，服务器端返回的是 {url:'....'} 这种格式，即可这样插入图片：
+                // insertImg(result);
+                console.log("插入" + result)
+                editor.cmd.do("insertImg", "<img style=\"width: 95%;height: 220px;margin-left: 2%;margin-top: 10px;\" src=\"" + result + "\"/>")
+                // editor.cmd.do("insertHTML", "<p><img  src=" + result + " style='width: 100px; height: 100px;margin-left:10px' class='imgid'></p>");
+                // result 必须是一个 JSON 格式字符串！！！否则报错
+            }
+        };
+
+        editor.create();
+    }
+</script>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>统计图</title>
+    <script src="../public/js/echarts.min.js"></script>
+</head>
+<body>
+    <div id="demo-1" style="height: 300px; width: 400px; background-color: #B1D2EC">
+
+    </div>
+</body>
+<script>
+    data = [{value: ["2000-06-05", 116]}, {value: ["2000-06-06", 129]},{value: ["2000-06-07", 135]},
+        {value: ["2000-06-08", 86]}, {value: ["2000-06-09", 73]},{value: ["2000-06-10", 85]},
+        {value: ["2000-06-11", 73]}, {value: ["2000-06-12", 68]},{value: ["2000-06-13", 92]},
+        // {value: ["2000-06-14", 130]}, {value: ["2000-06-15", 245]},{value: ["2000-06-16", 139]},
+    //     // ["2000-06-17",115], ["2000-06-18",111], ["2000-06-19",309],
+    //     // ["2000-06-20",206], ["2000-06-21",137], ["2000-06-22",128], ["2000-06-23",85], ["2000-06-24",94],
+    //     // ["2000-06-25",71], ["2000-06-26",106], ["2000-06-27",84], ["2000-06-28",93],["2000-06-29",85],
+    //     // ["2000-06-30",73],["2000-07-01",83],["2000-07-02",125],["2000-07-03",107],["2000-07-04",82],
+    //     // ["2000-07-05",44],["2000-07-06",72],["2000-07-07",106],["2000-07-08",107],["2000-07-09",66],
+    //     // ["2000-07-10",91],["2000-07-11",92],["2000-07-12",113],["2000-07-13",107],["2000-07-14",131],
+    //     // ["2000-07-15",111],["2000-07-16",64],["2000-07-17",69],["2000-07-18",88],["2000-07-19",77],
+    //     // ["2000-07-20",83],["2000-07-21",111],["2000-07-22",57],["2000-07-23",55],["2000-07-24",60]
+    ];
+    // data=[{value: ["1997-10-1", 684]},
+    //     {value: ["1997-10-2", 200]},
+    //     {value: ["1997-10-15", 300]}]
+
+    var dateList = data.map(function (item) {
+        return new Date(item[0]);
+    });
+    console.log(dateList);
+    var valueList = data.map(function (item) {
+        return item[1];
+    });
+
+    var myChart = echarts.init(document.getElementById('demo-1'));
+    var option = {
+        // Make gradient line here
+        // visualMap: [{
+        //     show: false,
+        //     type: 'continuous',
+        //     seriesIndex: 0,
+        //     min: 0,
+        //     max: 400
+        // }],
+        xAxis:[{
+            data: dateList
+            , type: 'time'
+            // ,min: new Date("开始时间")
+            // ,max: new Date("结束时间")
+            ,name:'日期'
+            ,boundaryGap:false//坐标轴两边留白策略
+            ,splitNumber:3
+            ,axisTick: {
+                alignWithLabel:true
+                ,interval:0
+            }
+            ,splitLine:{
+                show : false,
+                interval : 0
+            }
+            // ,axisLabel:{
+            //     formatter: function (value, index) {
+            //         // 格式化成月/日，只在第一个刻度显示年份
+            //         // var date = new Date(value);
+            //         var texts = [(value.getMonth() + 1), value.getDate()];
+            //         // if (index === 0) {
+            //         //     texts.unshift(date.getYear());
+            //         // }
+            //         return texts.join('/');
+            //     }
+            // }
+        }],
+        yAxis:[{
+            type: 'value',
+            splitLine: {show: true}
+            ,name:'浏览量'
+            , nameRotate: 90//旋转90
+            , nameLocation:'middle'//名字放中间
+            ,boundaryGap:false//坐标轴两边留白策略
+        }],
+        series: [{
+            type: 'line',
+            showSymbol: false,
+            data: data,
+        }]
+    };
+
+    var option2 = {
+        title: {text: '七天内总浏览量'},
+        legend: {data: ['浏览量']},//数据标识
+        toolbox: {
+            show: true,
+            feature: {
+                mark: {show: true},
+                dataView: {show: true, readOnly: false},
+                magicType: {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+                restore: {show: true},
+                saveAsImage: {show: true}
+            }
+        },//工具栏
+        tooltip: {trigger: 'axis'},//提示框
+        xAxis: {
+            type: 'time',
+            min: new Date("2000-06-05"),
+            max: new Date("2000-06-13"),
+            interval:new Date("2000-06-06"),
+            axisTick: {
+                inside:true
+            },
+            axisLabel:{
+                formatter: function (value, index) {
+                    console.log(value)
+                    // 格式化成月/日，只在第一个刻度显示年份
+                    var date = new Date(value);
+                    var texts = [(date.getMonth() + 1), date.getDate()];
+                    if (index === 0) {
+                        texts.unshift(date.getFullYear());
+                    }
+                    return texts.join('-');
+                }
+            },
+            splitLine:{
+                show:false//分割线显示
+            }
+        },
+        yAxis: {
+            type: 'value',
+            name:'浏览量',},
+        series: [{
+            data: data,
+            type: 'line'
+        }]
+    };
+
+    myChart.setOption(option2);
+</script>
+</html>

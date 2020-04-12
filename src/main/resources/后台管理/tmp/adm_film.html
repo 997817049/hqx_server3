@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <title>电影管理</title>
+    <link rel="stylesheet" type="text/css" href="../public/layui/css/layui.css">
+    <link href="../public/css/common.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../public/css/nav.css">
+    <link rel="stylesheet" type="text/css" href="../public/css/iconfont.css">
+    <script src="../public/js/public.js"></script>
+    <script src="../public/js/jquery-3.2.1.min.js"></script>
+    <script src="../public/layui/layui.js"></script>
+    <script src="../public/js/alert.js"></script>
+    <script type="text/javascript" src="../public/js/nav.js"></script>
+    <script src="../public/js/echarts.min.js"></script>
+</head>
+
+<body>
+<!-- 头部导航 -->
+<div class="jzy_w_max jzy_h_50 br_12">
+    <!-- LOGO -->
+    <div class="jzy_w_50 jzy_h_50 br_12 br_11_hove lt logo">
+        <a href=""><img src="../public/images/aliyun.png"></a>
+    </div>
+    <!--菜单1-->
+    <div class="jzy_w_90 jzy_h_50 br_12 br_11_hove lt top-txt">
+        <a class="cr_h_0 fs_14" href="">管理控制台</a>
+    </div>
+
+    <!--头像-->
+    <div class="jzy_w_50 jzy_h_50 br_12 br_11_hove rt top-txt logo">
+        <img class="jzy_boy_18" src="../public/images/touxiang.jpg" width="36" height="36">
+        <!-- 头像下拉菜单 -->
+        <div class="jzy_w_270 jzy_h_408 br_h_0 top_nav">
+            <!--头像跟用户名-->
+            <div class="jzy_w_max jzy_h_50 lt" style="margin-top: 15px"><img class="jzy_boy_18"
+                                                                             src="../public/images/touxiang.jpg"
+                                                                             width="36" height="36"></div>
+            <div class="jzy_w_max jzy_h_30 lt" style="line-height: 30px; border-bottom: 1px solid #e2e2e2">
+                1731223728@qq.com
+            </div>
+            <!--用户公共操作权限-->
+            <div class="jzy_w_250 jzy_h_250 lt" style="padding: 10px">
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/jbzl.png"></p>基本资料</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/smrz.png"></p>实名认证</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/aqsz.png"></p>安全设置</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/fxgk.png"></p>风险管控</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/fwkz.png"></p>访问控制</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/api.png"></p>API接口</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/hyqy.png"></p>会员权益</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/hyjf.png"></p>会员积分</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/wjgl.png"></p>文件管理</a>
+                </div>
+            </div>
+            <!--退出登录-->
+            <div class="jzy_w_max jzy_h_42 lt br_h_9" style="background: #f5f5f6; line-height: 45px"><a
+                    href="../login.html">退出管理控制台</a></div>
+        </div>
+    </div>
+
+    <!--菜单2-->
+    <div class="jzy_w_90 jzy_h_50 br_12 br_11_hove rt top-txt">
+        <a class="cr_h_0 fs_14">语言选择</a>
+        <!-- 头像下拉菜单 -->
+        <div class="jzy_w_90 br_h_0 top_nav nav2">
+            <p class="p"><a href="">简体中文</a></p>
+            <p class="p"><a href="">English</a></p>
+        </div>
+    </div>
+
+    <!--菜单3-->
+    <div class="jzy_w_90 jzy_h_50 br_12 br_11_hove rt top-txt">
+        <a class="cr_h_0 fs_14">权限设置</a>
+        <!-- 头像下拉菜单 -->
+        <div class="jzy_w_90 br_h_0 top_nav nav2">
+            <p class="p"><a href="">新建权限</a></p>
+            <p class="p"><a href="">角色列表</a></p>
+            <p class="p"><a href="">部门管理</a></p>
+        </div>
+    </div>
+
+</div>
+
+<!--左侧主导航-->
+<div class="jzy_w_180 lt main_height main_left nav" style="background: #333744">
+
+    <div class="nav-top">
+        <div id="mini" style="background: #4a5064; text-align: center"><img src="../public/images/icon/suofang.png"
+                                                                            width="20"></div>
+    </div>
+    <ul>
+        <li class="nav-item">
+            <a href="javascript:"><i class="my-icon nav-icon icon_1"></i><span>新闻模块</span><i
+                    class="my-icon nav-more"></i></a>
+            <ul>
+                <li><a href="../新闻/adm_news.html"><span>新闻</span></a></li>
+                <li><a href="../新闻/adm_character.html"><span>人物</span></a></li>
+                <li><a href="../新闻/adm_military.html"><span>军事</span></a></li>
+                <li><a href="../新闻/adm_history.html"><span>史实</span></a></li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <a href="javascript:"><i class="my-icon nav-icon icon_1"></i><span>基地模块</span><i
+                    class="my-icon nav-more"></i></a>
+            <ul>
+                <li><a href="../基地/base_add.html"><span>新增景点</span></a></li>
+                <li><a href="../基地/adm_base.html"><span>查看景点</span></a></li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <a href="javascript:"><i class="my-icon nav-icon icon_1"></i><span>学习模块</span><i
+                    class="my-icon nav-more"></i></a>
+            <ul>
+                <li><a href="../学习/adm_exam.html"><span>答题</span></a></li>
+                <li><a href="../学习/adm_literature.html"><span>书籍</span></a></li>
+                <li><a href="../学习/adm_teleplay.html"><span>电视</span></a></li>
+                <li><a href="adm_film.html"><span>电影</span></a></li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<!--左侧次导航-->
+<div class="jzy_w_180 lt main_height main_nav" style="background: #D9DEE4">
+    <div class="jzy_w_150 jzy_h_70 fs_13 lt" style="font-weight: bold; line-height: 70px;padding-left: 30px">学习管理</div>
+    <div class="jzy_w_180 fs_13 lt main_height2" style="background: #EAEDF1;">
+        <div class="jzy_w_130 jzy_h_40 fs_12 lt" style="line-height: 40px;padding-left: 50px"><a href="film_add.html">新增电影</a>
+        </div>
+        <div class="jzy_w_130 jzy_h_40 fs_12 lt" style="line-height: 40px;padding-left: 50px"><a href="adm_film.html">电影列表</a>
+        </div>
+    </div>
+</div>
+
+<!--主内容框架-->
+<div class="main_height main_index lt" style="background: #f2f4f8;">
+    <div class="layui-btn-group demoTable jzy_w_max br_h_0 tabTop" style="margin-bottom: 0;">
+        <span>电影列表</span>
+    </div>
+    <table class="layui-hide" id="demo" lay-filter="demo"></table>
+</div>
+</body>
+
+<script type="text/html" id="titleBar">
+    <button type="button" class="layui-btn layui-btn-sm" lay-event="delete">删除</button>
+    <button type="button" class="layui-btn layui-btn-sm" lay-event="search">查询</button>
+    <div class="layui-input-inline" style="margin-left: 20px;">
+        <input id="key" type="text" name="key" lay-verify="key" autocomplete="off" placeholder="请输入关键字"
+               class="layui-input">
+    </div>
+</script>
+
+<script>
+    num = 0;
+    datalist = [];
+    layui.use(['form', 'table', 'laydate', 'tree'], function () {
+        table = layui.table;
+
+        // 开启一个数据表格
+        table.render({
+            elem: '#demo'
+            , url: serverIp + "manage/study?userId=2&part=film"
+            , title: '用户表'
+            , toolbar: '#titleBar' //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+            , page: true //开启分页
+            , limit: 10 //默认分页条数
+            , height: 'full-135' //高度最大化
+            , cols: [
+                [ //表头
+                    {type: 'checkbox'} // 开启多选框
+                    , {field: 'id', title: 'ID', width: '7%', align: 'center', sort: true}
+                    , {field: 'title', title: '标题', width: '15%', event: 'setTitle'}
+                    , {field: 'character', title: '作者', width: '15%', event: 'setCharacter'}
+                    , {field: 'synopsis', title: '简介', width: '15%', event: 'setSynopsis'}
+                    , {field: 'picUrl', title: '图片路径', width: '15%', event: 'setPicUrl'}
+                    , {field: 'detailUrl', title: '视频路径', width: '15%', event: 'setDetailUrl'}
+                    , {field: 'count', title: '浏览数', width: '10%', align: 'center', sort: true}
+                ]
+            ]
+        });
+
+        //头工具栏事件
+        table.on('toolbar(demo)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            console.log("事件：" + obj.event);
+            switch (obj.event) {
+                case 'search':
+                    search();
+                    break;
+                case 'delete':
+                    dealDelList(checkStatus, "film");
+                    break;
+                case 'LAYTABLE_PRINT':
+                    //todo 有问题
+                    layer.msg("该控件暂时无法使用");
+                    break;
+            }
+            ;
+        });
+
+        //监听单元格事件
+        table.on('tool(demo)', function (obj) {
+            var data = obj.data;
+            switch (obj.event) {
+                case 'setTitle':
+                    layer.prompt({
+                        formType: 2//多行文本
+                        , title: '修改 ID 为 [' + data.id + '] 的电影名称'
+                        , value: data.title
+                    }, function (value, index) {
+                        layer.close(index);
+                        updateTitle("film", obj, value);
+                    });
+                    break;
+                case 'setCharacter':
+                    layer.prompt({
+                        formType: 2//多行文本
+                        , title: '修改 ID 为 [' + data.id + '] 的演员表'
+                        , value: data.character
+                    }, function (value, index) {
+                        layer.close(index);
+                        updateCharacter("film", obj, value);
+                    });
+                    break;
+                case 'setSynopsis':
+                    layer.prompt({
+                        formType: 2//多行文本
+                        , title: '修改 ID 为 [' + data.id + '] 的电影简介'
+                        , value: data.synopsis
+                    }, function (value, index) {
+                        layer.close(index);
+                        updateSynopsis("film", obj, value);
+                    });
+                    break;
+                case 'setPicUrl':
+                    layer.prompt({
+                        formType: 2//多行文本
+                        , title: '修改 ID 为 [' + data.id + '] 的电影图片路径'
+                        , value: data.picUrl
+                    }, function (value, index) {
+                        layer.close(index);
+                        updatePic("film", obj, value);
+                    });
+                    break;
+                case 'setDetailUrl':
+                    layer.prompt({
+                        formType: 2//多行文本
+                        , title: '修改 ID 为 [' + data.id + '] 的电影视频路径'
+                        , value: data.detailUrl
+                    }, function (value, index) {
+                        layer.close(index);
+                        //这里一般是发送修改的Ajax请求
+                        updateDetail("film", obj, value);
+                    });
+                    break;
+            }
+        });
+    });
+
+</script>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>统计</title>
+    <script src="../public/js/echarts.min.js"></script>
+</head>
+<body>
+<div id="demo-1" style="height: 300px; width: 400px;">
+
+</div>
+</body>
+<script>
+    var preData = [97, 42, 88, 94, 90, 86];
+    var nowData = [97, 32, 74, 95, 88, 92];
+
+    function getObj(name, value) {
+        var obj = new Object();
+        obj.name = name;
+        obj.value = value;
+        return obj;
+    }
+
+    // 第二个图标
+    var myChart3 = echarts.init(document.getElementById('demo-1'));
+    var option3 = {
+        title: {
+            text: '模块对比'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            left: 'center',
+            data: ['上周浏览量', '本周浏览量']
+        },
+        toolbox: {
+            show: true,
+            feature: {
+                mark: {show: true},
+                dataView: {show: true, readOnly: false},
+                restore: {show: true},
+                saveAsImage: {show: true}
+            }
+        },
+        calculable: true,
+        polar: [
+            {
+                indicator: [
+                    {text: '马原', max: 100},
+                    {text: '毛概', max: 100},
+                    {text: '近代史', max: 100},
+                    {text: '思修', max: 100},
+                    {text: '时政', max: 100},
+                    {text: '考研', max: 100}
+                ],
+                center: ['50%', '50%'],
+                radius: 100
+            }
+        ],
+        series: [
+            {
+                name: '数据对比',
+                type: 'radar',
+                tooltip: {
+                    trigger: 'item'
+                },
+                itemStyle: {
+                    normal: {
+                        areaStyle: {
+                            type: 'default'
+                        }
+                    }
+                },
+                data: [
+                    getObj('上周浏览量', preData),
+                    getObj('本周浏览量', nowData)
+                ]
+            }
+        ]
+    };
+    myChart3.setOption(option3);
+</script>
+</html>

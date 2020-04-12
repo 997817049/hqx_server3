@@ -1,0 +1,37 @@
+.info {
+    font-size: 15px;
+    font-weight: bold;
+    color: red;
+}
+
+.file-info {
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.file-box {
+    height: 130px;
+    width: 90px;
+    display: none;
+}
+
+.speed-wrapper {
+    width: 600px;
+    height: 10px;
+    display: none;
+    border: 1px solid #0091f2;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.speed {
+    width: 20px;
+    height: 100%;
+    background: #0091f2;
+    color: white;
+    padding-left: 5px;
+    text-align: left;
+    line-height: 10px;
+    font-size: 12px;
+}

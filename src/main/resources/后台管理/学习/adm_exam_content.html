@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <title>试卷详情</title>
+    <link rel="stylesheet" type="text/css" href="../public/layui/css/layui.css">
+    <link href="../public/css/common.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../public/css/nav.css">
+    <link rel="stylesheet" type="text/css" href="../public/css/iconfont.css">
+    <script src="../public/js/public.js"></script>
+    <script src="../public/js/jquery-3.2.1.min.js"></script>
+    <script src="../public/layui/layui.js"></script>
+    <script src="../public/js/alert.js"></script>
+    <script type="text/javascript" src="../public/js/nav.js"></script>
+    <script src="../public/js/echarts.min.js"></script>
+</head>
+
+<body>
+<!-- 头部导航 -->
+<div class="jzy_w_max jzy_h_50 br_12">
+    <!-- LOGO -->
+    <div class="jzy_w_50 jzy_h_50 br_12 br_11_hove lt logo">
+        <a href=""><img src="../public/images/aliyun.png"></a>
+    </div>
+    <!--菜单1-->
+    <div class="jzy_w_90 jzy_h_50 br_12 br_11_hove lt top-txt">
+        <a class="cr_h_0 fs_14" href="">管理控制台</a>
+    </div>
+
+    <!--头像-->
+    <div class="jzy_w_50 jzy_h_50 br_12 br_11_hove rt top-txt logo">
+        <img class="jzy_boy_18" src="../public/images/touxiang.jpg" width="36" height="36">
+        <!-- 头像下拉菜单 -->
+        <div class="jzy_w_270 jzy_h_408 br_h_0 top_nav">
+            <!--头像跟用户名-->
+            <div class="jzy_w_max jzy_h_50 lt" style="margin-top: 15px"><img class="jzy_boy_18"
+                                                                             src="../public/images/touxiang.jpg"
+                                                                             width="36" height="36"></div>
+            <div class="jzy_w_max jzy_h_30 lt" style="line-height: 30px; border-bottom: 1px solid #e2e2e2">
+                1731223728@qq.com
+            </div>
+            <!--用户公共操作权限-->
+            <div class="jzy_w_250 jzy_h_250 lt" style="padding: 10px">
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/jbzl.png"></p>基本资料</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/smrz.png"></p>实名认证</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/aqsz.png"></p>安全设置</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/fxgk.png"></p>风险管控</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/fwkz.png"></p>访问控制</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/api.png"></p>API接口</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/hyqy.png"></p>会员权益</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/hyjf.png"></p>会员积分</a>
+                </div>
+
+                <div class="jzy_w_80 jzy_h_80 lt br_h_2_hove">
+                    <a><p class="jzy_h_30"><img src="../public/images/icon/wjgl.png"></p>文件管理</a>
+                </div>
+            </div>
+            <!--退出登录-->
+            <div class="jzy_w_max jzy_h_42 lt br_h_9" style="background: #f5f5f6; line-height: 45px"><a
+                    href="../login.html">退出管理控制台</a></div>
+        </div>
+    </div>
+
+    <!--菜单2-->
+    <div class="jzy_w_90 jzy_h_50 br_12 br_11_hove rt top-txt">
+        <a class="cr_h_0 fs_14">语言选择</a>
+        <!-- 头像下拉菜单 -->
+        <div class="jzy_w_90 br_h_0 top_nav nav2">
+            <p class="p"><a href="">简体中文</a></p>
+            <p class="p"><a href="">English</a></p>
+        </div>
+    </div>
+
+    <!--菜单3-->
+    <div class="jzy_w_90 jzy_h_50 br_12 br_11_hove rt top-txt">
+        <a class="cr_h_0 fs_14">权限设置</a>
+        <!-- 头像下拉菜单 -->
+        <div class="jzy_w_90 br_h_0 top_nav nav2">
+            <p class="p"><a href="">新建权限</a></p>
+            <p class="p"><a href="">角色列表</a></p>
+            <p class="p"><a href="">部门管理</a></p>
+        </div>
+    </div>
+
+</div>
+
+<!--左侧主导航-->
+<div class="jzy_w_180 lt main_height main_left nav" style="background: #333744">
+
+    <div class="nav-top">
+        <div id="mini" style="background: #4a5064; text-align: center"><img src="../public/images/icon/suofang.png"
+                                                                            width="20"></div>
+    </div>
+    <ul>
+        <li class="nav-item">
+            <a href="javascript:"><i class="my-icon nav-icon icon_1"></i><span>新闻模块</span><i
+                    class="my-icon nav-more"></i></a>
+            <ul>
+                <li><a href="../新闻/adm_news.html"><span>新闻</span></a></li>
+                <li><a href="../新闻/adm_character.html"><span>人物</span></a></li>
+                <li><a href="../新闻/adm_military.html"><span>军事</span></a></li>
+                <li><a href="../新闻/adm_history.html"><span>史实</span></a></li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <a href="javascript:"><i class="my-icon nav-icon icon_1"></i><span>基地模块</span><i
+                    class="my-icon nav-more"></i></a>
+            <ul>
+                <li><a href="../基地/base_add.html"><span>新增景点</span></a></li>
+                <li><a href="../基地/adm_base.html"><span>查看景点</span></a></li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <a href="javascript:"><i class="my-icon nav-icon icon_1"></i><span>学习模块</span><i
+                    class="my-icon nav-more"></i></a>
+            <ul>
+                <li><a href="../学习/adm_exam.html"><span>答题</span></a></li>
+                <li><a href="../学习/adm_literature.html"><span>书籍</span></a></li>
+                <li><a href="../学习/adm_teleplay.html"><span>电视</span></a></li>
+                <li><a href="../tmp/adm_film.html"><span>电影</span></a></li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<!--左侧次导航-->
+<div class="jzy_w_180 lt main_height main_nav" style="background: #D9DEE4">
+    <div class="jzy_w_150 jzy_h_70 fs_13 lt" style="font-weight: bold; line-height: 70px;padding-left: 30px">学习管理</div>
+    <div class="jzy_w_180 fs_13 lt main_height2" style="background: #EAEDF1;">
+        <div class="jzy_w_130 jzy_h_40 fs_12 lt " style="line-height: 40px;padding-left: 50px">
+            <a href="statistics_study.html?part=exam">答题概况</a>
+        </div>
+        <div class="jzy_w_130 jzy_h_40 fs_12 lt" style="line-height: 40px;padding-left: 50px">
+            <a href="add_exam.html">新增试卷</a>
+        </div>
+        <div class="jzy_w_130 jzy_h_40 fs_12 lt" style="line-height: 40px;padding-left: 50px">
+            <a href="adm_exam.html">试卷列表</a>
+        </div>
+        <div class="jzy_w_130 jzy_h_40 fs_12 lt br_h_0" style="line-height: 40px;padding-left: 50px">
+            <a href="">试题列表</a>
+        </div>
+    </div>
+</div>
+
+<!--主内容框架-->
+<div class="main_height main_index lt" style="background: #f2f4f8;">
+    <div class="layui-btn-group demoTable jzy_w_max br_h_0 tabTop">
+        <span>题目列表</span>
+    </div>
+    <div class="tree_left" style="width: 100%">
+        <div class="layui-form">
+            <div id="exam_content" style="display: none">
+                <!--题号-->
+                <div class="layui-form-item" style="margin-top:20px; width: 31%">
+                    <label class="layui-form-label">题号</label>
+                    <div class="layui-input-block">
+                        <input id="num" type="text" name="num" placeholder="请输入题号" class="layui-input">
+                    </div>
+                </div>
+                <!--试题类型-->
+                <div id="questionType-wrapper" class="layui-form-item" >
+                    <label class="layui-form-label">试题类型</label>
+                    <div class="layui-input-inline">
+                        <select id="type" name="type" lay-filter="type" onchange="typeChange()">
+                            <option value="">请选择题目类型</option>
+                            <option value="0">填空</option>
+                            <option value="1">单选</option>
+                            <option value="2">多选</option>
+                            <option value="3">论述</option>
+                        </select>
+                    </div>
+                </div>
+                <!--题干-->
+                <div id="question-wrapper" class="layui-form-item" style="width: 90%">
+                    <label class="layui-form-label">题干</label>
+                    <div class="layui-input-block">
+                        <textarea id="question" placeholder="请输入题干" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                <!--选项-->
+                <div id="option-wrapper" style="display: none">
+                    <!--选项A-->
+                    <div class="layui-form-item" style="width: 90%">
+                        <label class="layui-form-label">选项A</label>
+                        <div class="layui-input-block">
+                            <input id="optionA" type="text" name="title" placeholder="请输入选项A" class="layui-input">
+                        </div>
+                    </div>
+                    <!--选项B-->
+                    <div class="layui-form-item" style="width: 90%">
+                        <label class="layui-form-label">选项B</label>
+                        <div class="layui-input-block">
+                            <input id="optionB" type="text" name="title" placeholder="请输入选项B" class="layui-input">
+                        </div>
+                    </div>
+                    <!--选项C-->
+                    <div class="layui-form-item" style="width: 90%">
+                        <label class="layui-form-label">选项C</label>
+                        <div class="layui-input-block">
+                            <input id="optionC" type="text" name="title" placeholder="请输入选项C" class="layui-input">
+                        </div>
+                    </div>
+                    <!--选项D-->
+                    <div class="layui-form-item" style="width: 90%">
+                        <label class="layui-form-label">选项D</label>
+                        <div class="layui-input-block">
+                            <input id="optionD" type="text" name="title" placeholder="请输入选项D" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <!--答案-->
+                <div id="answer-wrapper" class="layui-form-item" style="width: 90%">
+                    <label class="layui-form-label">答案</label>
+                    <div class="layui-input-block">
+                        <textarea id="answer" placeholder="请输入答案" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                <!--解析-->
+                <div id="analysis-wrapper" class="layui-form-item" style="width: 90%">
+                    <label class="layui-form-label">解析</label>
+                    <div class="layui-input-block">
+                        <textarea id="analysis" placeholder="请输入解析" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                <!--消息-->
+                <div id="info-wrapper" class="layui-form-item" style="width: 90%">
+                    <div class="layui-input-block" style="line-height: 36px; ">
+                        <!--消息-->
+                        <div id="info" style="font-size: 14px;font-weight: bold;color: red;"></div>
+                    </div>
+                </div>
+                <!--按钮-->
+                <div class="layui-form-item" style="width: 90%">
+                    <div class="layui-input-block" style="float: right;">
+                        <button id="addQuestion" class="layui-btn layui-btn-normal" onclick="dealConfirm()">确认</button>
+                        <button id="reset" class="layui-btn layui-btn-normal" onclick="dealCancel()">取消</button>
+                    </div>
+                </div>
+            </div>
+            <table id="demo" lay-filter="demo"  style="width: 90%"></table>
+        </div>
+    </div>
+</div>
+</body>
+
+<script type="text/html" id="titleBar">
+    <div class="layui-btn-group">
+        <button type="button" class="layui-btn layui-btn-sm" lay-event="delete">
+            <i class="layui-icon">&#xe640;</i><!--删除-->
+        </button>
+        <button type="button" class="layui-btn layui-btn-sm" lay-event="edit">
+            <i class="layui-icon">&#xe642;</i><!--编辑-->
+        </button>
+        <button type="button" class="layui-btn layui-btn-sm" lay-event="add">
+            <i class="layui-icon">&#xe654;</i><!--添加-->
+        </button>
+    </div>
+</script>
+
+<script>
+    layui.use(['form', 'table', 'laydate', 'tree'], function () {
+        table = layui.table;
+        form = layui.form;
+
+        // 开启一个数据表格
+        table.render({
+            elem: '#demo'
+            // , url: serverIp + "manage/study?userId=2&part=exam"
+            , toolbar: '#titleBar' //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+            // , page: {
+            //     curr: history.state != null &&history.state.page!=null? history.state.page : 1
+            // }
+            , page: true //开启分页
+            , height: 531 //高度最大化
+            , cols: [
+                [ //表头
+                    {type: 'checkbox'}, // 开启多选框
+                    {field: 'num', title: '题号', width: '8%', align: 'center', sort: true},
+                    {field: 'type', title: '题型', width: '8%', templet:"<div>{{d.type.msg}}</div>"},
+                    {field: 'question', title: '题目', width: '20%'},
+                    {field: 'optionA', title: '选项A', width: '10%'},
+                    {field: 'optionB', title: '选项B', width: '10%'},
+                    {field: 'optionC', title: '选项C', width: '10%'},
+                    {field: 'optionD', title: '选项D', width: '10%'},
+                    {field: 'answer', title: '答案', width: '7%'},
+                    {field: 'analysis', title: '解析', width: '20%'}
+                ]
+            ]
+        });
+
+        //头工具栏事件 删除 查询
+        table.on('toolbar(demo)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'delete':deleteQuestion(checkStatus);break;
+                case 'edit': {
+                    var checkList = checkStatus.data;
+                    if (checkList.length <= 0 || checkList.length > 1) {
+                        layer.alert("必须要选择一行记录");
+                        return;
+                    }
+                    var model = checkList[0];
+                    var type = model.type.type;
+                    $("#num").val(model.num);
+                    document.getElementById("num").disabled = "true";
+                    $("#type").val(type);
+                    $("#question").val(model.question);
+                    $("#answer").val(model.answer);
+                    $("#analysis").val(model.analysis);
+                    if(type === 1 || type === 3) {
+                        $("#optionA").val(model.optionA);
+                        $("#optionB").val(model.optionB);
+                        $("#optionC").val(model.optionC);
+                        $("#optionD").val(model.optionD);
+                        $("#option-wrapper").show();
+                    }
+                    form.render("select");
+                    $("#exam_content").show();
+                    break;
+                }
+                case 'add':
+                    $("#num").val('');
+                    $("#type").val('');
+                    $("#question").val('');
+                    $("#answer").val('');
+                    $("#analysis").val('');
+                    $("#optionA").val('');
+                    $("#optionB").val('');
+                    $("#optionC").val('');
+                    $("#optionD").val('');
+                    $("#exam_content").show();
+                    break;
+                case 'LAYTABLE_PRINT':
+                    //todo 有问题
+                    layer.msg("该控件暂时无法使用");
+                    break;
+            }
+        });
+
+        form.on('select(type)', function (data) {
+            var type = data.value;
+            if(type == 0 || type == 3) {
+                $("#option-wrapper").hide();
+                $("#optionA").val('');
+                $("#optionB").val('');
+                $("#optionC").val('');
+                $("#optionD").val('');
+            } else {
+                $("#option-wrapper").show();
+            }
+        });
+
+        init();
+    });
+
+    function init() {
+        var query = window.location.search.substring(1);
+        query = decodeURI(query);
+        query = query.split("=")[1];
+        para = JSON.parse(query);
+        $.ajax({
+            type: "POST",
+            url: serverIp + "study/exam/content", // 后端服务器上传地址
+            data: {
+                userId:2,
+                id: para.id
+            },
+            success: function (rs) {
+                if (rs.num === 1) {
+                    layer.msg("获取数据失败");
+                    return;
+                }
+                table.reload('demo', {
+                    data: rs.data
+                });
+            },
+            error: function () {
+                layer.msg("获取数据失败");
+            }
+        })
+    }
+
+    function dealConfirm() {
+        //更新
+        var formData = checkQuestionParam();
+        if(formData === null) return;
+        formData.set("id", para.id);
+        $.ajax({
+            type: "POST",
+            url: serverIp + "update/study/exam/content", // 后端服务器上传地址
+            data: formData,
+            cache: false, // 是否缓存
+            async: true, // 是否异步执行
+            processData: false, // 是否处理发送的数据  (必须false才会避开jQuery对 formdata 的默认处理)
+            contentType: false, // 是否设置Content-Type请求头
+            success: function (rs) {
+                $("#exam_content").hide();
+                console.log("**");
+                var page = $(".layui-laypage-em").next().html();
+                console.log(page);
+                table.reload('demo', {
+                    where: {
+                        key: null
+                    },
+                    page:{curr:page}
+                });
+            },
+            error: function () {
+                layer.msg("更新失败");
+            }
+        });
+
+    }
+
+    //检查试题参数
+    function checkQuestionParam() {
+        $("#info").show();
+        var type = document.getElementById("type").value;
+        if (type == null) {
+            $("#info").html("请选择试题类型");
+            return null;
+        }
+        var question_txt = document.getElementById("question").value;
+        if (question_txt === undefined || question_txt === null || question_txt.toString().trim().length <= 0) {
+            $("#info").html("题目不正确");
+            return null;
+        }
+        var optionA_txt = "", optionB_txt = "", optionC_txt = "", optionD_txt = "";
+        //选项检查
+        if (type === 1 || type === 2) {
+            optionA_txt = document.getElementById("optionA").value;
+            if (optionA_txt === undefined || optionA_txt === null || optionA_txt.toString().trim().length <= 0) {
+                $("#info").html("选项A不正确");
+                return null;
+            }
+            optionB_txt = document.getElementById("optionB").value;
+            if (optionB_txt === undefined || optionB_txt === null || optionB_txt.toString().trim().length <= 0) {
+                $("#info").html("选项B不正确");
+                return null;
+            }
+            optionC_txt = document.getElementById("optionC").value;
+            if (optionC_txt === undefined || optionC_txt === null || optionC_txt.toString().trim().length <= 0) {
+                $("#info").html("选项C不正确");
+                return null;
+            }
+            optionD_txt = document.getElementById("optionD").value;
+            if (optionD_txt === undefined || optionD_txt === null || optionD_txt.toString().trim().length <= 0) {
+                $("#info").html("选项D不正确");
+                return null;
+            }
+        }
+        var answer_txt = document.getElementById("answer").value;
+        if (answer_txt === undefined || answer_txt === null || answer_txt.toString().trim().length <= 0) {
+            $("#info").html("答案不正确");
+            return null;
+        }
+        var analysis_txt = document.getElementById("analysis").value;
+        if (analysis_txt === undefined || analysis_txt === null || analysis_txt.toString().trim().length <= 0) {
+            $("#info").html("解析不正确");
+            return null;
+        }
+        $("#info").hide();
+        var formData = new FormData();
+        var num = document.getElementById("num").value;
+        formData.set("num", num);
+        formData.set("type", type);
+        formData.set("question", question_txt.trim());
+        formData.set("optionA", optionA_txt.trim());
+        formData.set("optionB", optionB_txt.trim());
+        formData.set("optionC", optionC_txt.trim());
+        formData.set("optionD", optionD_txt.trim());
+        formData.set("answer", answer_txt.trim());
+        formData.set("analysis", analysis_txt.trim());
+        return formData;
+    }
+
+    function dealCancel() {
+        $("#exam_content").hide();
+    }
+
+    function deleteQuestion(checkStatus) {
+        var checkList = checkStatus.data;
+        if (checkList.length <= 0) {
+            layer.alert("至少要选择一行记录");
+            return;
+        }
+        var idList = [];
+        for (var i = 0; i < checkList.length; i++) {
+            idList.push(checkList[i].num);
+        }
+
+        $.ajax({
+            type: "POST",
+            url: serverIp + "delete/study/exam", // 后端服务器上传地址
+            data: {
+                id: id,
+                num: idList,
+            },
+            success: function (rs) {
+                if (!rs) {
+                    layer.msg("删除失败");
+                } else {
+                    layer.msg("删除成功");
+                    //重新渲染
+                    table.reload('examContent');
+                }
+            },
+            error: function () {
+                layer.msg("删除失败");
+            }
+        })
+    }
+</script>
+</html>
