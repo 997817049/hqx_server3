@@ -1,7 +1,7 @@
 package com.zty.hqx.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.zty.hqx.annotation.IsModel;
 import com.zty.hqx.classify.EModel;
 import com.zty.hqx.classify.EStudyPart;
 import com.zty.hqx.model.*;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Controller
@@ -71,8 +72,8 @@ public class SearchController {
      * */
     @RequestMapping(value = "/search")
     @ResponseBody
-//    @Cacheable(value="search", key="'word_'+ #word + '_' + #model + '_' + #part + '_num_' + #num + '_limit_' + #limit")
-    public Result<String> dealSearch(int userId, String word, String model, String part, int num, int limit) {
+    @Cacheable(value="search", key="'word_'+ #word + '_' + #model + '_' + #part + '_num_' + #num + '_limit_' + #limit")
+    public Result<String> dealSearch(int userId, @NotBlank String word, @IsModel String model, String part, int num, int limit) {
         logger.info("查找" + word + "在" + model + "**" + part + "中");
         EModel emodel = EModel.getEnumFromString(model.toUpperCase());
         if(limit == 3){

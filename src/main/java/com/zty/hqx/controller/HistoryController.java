@@ -31,7 +31,7 @@ public class HistoryController {
      * */
     @RequestMapping(value = "/history/study/book")
     @ResponseBody
-//    @Cacheable(value="history_book", key="'userId_'+#userId")
+    @Cacheable(value="history_book", key="'userId_'+#userId")
     public Result<BookModel> getRecentRead(int userId, int limit) {
         logger.info("book获取" + userId + "的历史记录");
         BookModel bookModel = historyService.getBookRecentHistory(userId, limit);

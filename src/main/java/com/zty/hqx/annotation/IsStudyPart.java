@@ -1,6 +1,6 @@
 package com.zty.hqx.annotation;
 
-import com.zty.hqx.bean.IsPartNameValidator;
+import com.zty.hqx.bean.IsStudyPartValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -10,8 +10,8 @@ import java.lang.annotation.*;
         ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint(validatedBy = {IsPartNameValidator.class})
-public @interface IsPartName {
+@Constraint(validatedBy = {IsStudyPartValidator.class})
+public @interface IsStudyPart {
     String message() default "文件错误";
 
     Class<?>[] groups() default {};

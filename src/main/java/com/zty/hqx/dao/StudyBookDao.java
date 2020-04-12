@@ -11,7 +11,10 @@ public interface StudyBookDao {
     //判断名字是否可用
     @Select("SELECT * FROM book WHERE title = '${title}'")
     @Results({@Result(property = "picUrl", column = "pic"),
-            @Result(property = "fileUrl", column = "file")})
+            @Result(property = "fileUrl", column = "file"),
+            @Result(property = "label.num", column = "num"),
+            @Result(property = "label.msg", column = "msg"),
+            @Result(property = "label.english", column = "english"),})
     BookModel isTitleAvailable(String title);
 
 //  ---------------------------------------增删数据-----------------------------------------------
@@ -32,32 +35,50 @@ public interface StudyBookDao {
 
 //  ------------------------------------------------获取数据-----------------------------------------------
 
-    @Select("SELECT * FROM book ORDER BY book.count DESC LIMIT #{limit}")
+    @Select("SELECT * FROM book, e_book WHERE e_book.num = book.label ORDER BY book.count DESC LIMIT #{limit}")
     @Results({@Result(property = "picUrl", column = "pic"),
-            @Result(property = "fileUrl", column = "file")})
+            @Result(property = "fileUrl", column = "file"),
+            @Result(property = "label.num", column = "num"),
+            @Result(property = "label.msg", column = "msg"),
+            @Result(property = "label.english", column = "english"),})
     List<BookModel> getBookByCount(int limit);
 
-    @Select("SELECT * FROM book ORDER BY create_time DESC LIMIT #{limit}")
+    @Select("SELECT * FROM book, e_book WHERE e_book.num = book.label ORDER BY book.create_time DESC LIMIT #{limit}")
     @Results({@Result(property = "picUrl", column = "pic"),
-            @Result(property = "fileUrl", column = "file")})
+            @Result(property = "fileUrl", column = "file"),
+            @Result(property = "label.num", column = "num"),
+            @Result(property = "label.msg", column = "msg"),
+            @Result(property = "label.english", column = "english"),})
     List<BookModel> getBookByTime(int limit);
 
-    @Select("SELECT * FROM book WHERE label = #{label} and book.id > #{num} ORDER BY id LIMIT #{limit}")
+    @Select("SELECT * FROM book, e_book WHERE label = #{label} and book.id > #{num} and e_book.num = book.label ORDER BY id LIMIT #{limit}")
     @Results({@Result(property = "picUrl", column = "pic"),
-            @Result(property = "fileUrl", column = "file")})
+            @Result(property = "fileUrl", column = "file"),
+            @Result(property = "label.num", column = "num"),
+            @Result(property = "label.msg", column = "msg"),
+            @Result(property = "label.english", column = "english"),})
     List<BookModel> getBookByLabel(int num, int limit, int label);
 
-    @Select("SELECT * FROM book WHERE title LIKE '%${key}%' and id > #{num} ORDER BY id LIMIT #{limit}")
+    @Select("SELECT * FROM book, e_book WHERE e_book.num = book.label and title LIKE '%${key}%' and id > #{num} ORDER BY id LIMIT #{limit}")
     @Results({@Result(property = "picUrl", column = "pic"),
-            @Result(property = "fileUrl", column = "file")})
+            @Result(property = "fileUrl", column = "file"),
+            @Result(property = "label.num", column = "num"),
+            @Result(property = "label.msg", column = "msg"),
+            @Result(property = "label.english", column = "english"),})
     List<BookModel> getBookByTitle(String key, int num, int limit);
 
-    @Select("SELECT id, label, count FROM book")
+    @Select("SELECT id, label, count, e_book.* FROM book, e_book WHERE e_book.num = book.label")
+    @Results({@Result(property = "label.num", column = "num"),
+            @Result(property = "label.msg", column = "msg"),
+            @Result(property = "label.english", column = "english"),})
     List<BookModel> getAllBookCount();
 
-    @Select("SELECT * FROM book WHERE id > #{num} ORDER BY id LIMIT #{limit}")
+    @Select("SELECT * FROM book, e_book WHERE e_book.num = book.label and id > #{num} ORDER BY id LIMIT #{limit}")
     @Results({@Result(property = "picUrl", column = "pic"),
-            @Result(property = "fileUrl", column = "file")})
+            @Result(property = "fileUrl", column = "file"),
+            @Result(property = "label.num", column = "num"),
+            @Result(property = "label.msg", column = "msg"),
+            @Result(property = "label.english", column = "english"),})
     List<BookModel> getBookById(int num, int limit);
 
     @Select("SELECT * FROM book, e_book WHERE book.id = #{id} AND e_book.num = book.label;")

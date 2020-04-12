@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,6 +29,7 @@ import java.util.Objects;
  * 控制台上传视频，图片等  写入磁盘 返回路径
  */
 @Controller
+@Validated
 public class UpLoadController {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -49,8 +51,10 @@ public class UpLoadController {
      */
     @RequestMapping("/upload/book")
     @ResponseBody
-    public Result<String> upLoadBook(@NotBlank(message = "md5value不为空")  @RequestParam("md5") String md5,
-                                     @RequestParam("book")MultipartFile file) {
+    public Result<String> upLoadBook(@NotBlank(message = "md5value不为空")
+                                     @RequestParam("md5") String md5,
+                                     @RequestParam("book")
+                                     @IsMultipartFile MultipartFile file) {
         logger.info("上传book");
         //随机生成一个存储路径 相对路径
         String path = "book\\" + ZtyUtil.creatName(Objects.requireNonNull(file.getOriginalFilename()));
@@ -104,8 +108,10 @@ public class UpLoadController {
      */
     @RequestMapping("/upload/pic")
     @ResponseBody
-    public Result<String> upLoadImage(@NotBlank(message = "md5value不为空")  @RequestParam("md5") String md5,
-                               @RequestParam("pic") MultipartFile file) {
+    public Result<String> upLoadImage(@NotBlank(message = "md5value不为空")
+                                       @RequestParam("md5") String md5,
+                                       @RequestParam("pic")
+                                       @IsMultipartFile MultipartFile file) {
         logger.info("上传图片" + md5);
         if(md5.length() < 32) return Result.error();
         String path = resourceService.isExistPic(md5);

@@ -58,16 +58,12 @@ public class VideoModel implements Serializable {
         this.title = title;
     }
 
-    public int getLabelNum() {
-        return label.getNum();
-    }
-
     public ClassifyModel getLabel() {
         return label;
     }
 
-    public void setLabel(int label) {
-        this.label = new ClassifyModel(label);
+    public void setLabel(ClassifyModel label) {
+        this.label = label;
     }
 
     public void updateClassify(ClassifyModel label) {

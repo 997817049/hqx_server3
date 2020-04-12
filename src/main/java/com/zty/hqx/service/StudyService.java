@@ -373,7 +373,7 @@ public class StudyService {
     }
 
     private VideoModel dealVideoClassify(String subEnglish, VideoModel model){
-        ClassifyModel classifyModel = classifyDao.getClassifyByNum(model.getLabelNum(), subEnglish);
+        ClassifyModel classifyModel = classifyDao.getClassifyByNum(model.getLabel().getNum(), subEnglish);
         model.updateClassify(classifyModel);
         return model;
     }

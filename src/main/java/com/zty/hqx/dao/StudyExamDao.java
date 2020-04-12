@@ -48,26 +48,47 @@ public interface StudyExamDao {
 
 //---------------------------------------获取数据---------------------------------------------------
 
-    @Select("SELECT * FROM exam ORDER BY count DESC LIMIT #{limit};")
+    @Select("SELECT * FROM exam, e_exam where e_exam.num = exam.label ORDER BY count DESC LIMIT #{limit};")
+    @Results({@Result(property = "label.num", column = "num"),
+            @Result(property = "label.msg", column = "msg"),
+            @Result(property = "label.english", column = "english"),})
     List<ExamModel> getExamByCount(int limit);
 
-    @Select("SELECT * FROM exam ORDER BY create_time DESC LIMIT #{limit};")
+    @Select("SELECT * FROM exam, e_exam where e_exam.num = exam.label ORDER BY exam.create_time DESC LIMIT #{limit};")
+    @Results({@Result(property = "label.num", column = "num"),
+            @Result(property = "label.msg", column = "msg"),
+            @Result(property = "label.english", column = "english"),})
     List<ExamModel> getExamByTime(int limit);
 
-    @Select("SELECT * FROM exam WHERE id > #{num} and label = #{label} " +
+    @Select("SELECT * FROM exam, e_exam WHERE e_exam.num = exam.label and id > #{num} and label = #{label} " +
             "ORDER BY id LIMIT #{limit};")
+    @Results({@Result(property = "label.num", column = "num"),
+            @Result(property = "label.msg", column = "msg"),
+            @Result(property = "label.english", column = "english"),})
     List<ExamModel> getExamByLabel(int num, int limit, int label);
 
-    @Select("SELECT * FROM exam WHERE title LIKE '%${key}%' and id > #{num} ORDER BY id LIMIT #{limit}")
+    @Select("SELECT * FROM exam, e_exam WHERE e_exam.num = exam.label and title LIKE '%${key}%' and id > #{num} ORDER BY id LIMIT #{limit}")
+    @Results({@Result(property = "label.num", column = "num"),
+            @Result(property = "label.msg", column = "msg"),
+            @Result(property = "label.english", column = "english"),})
     List<ExamModel> getExamByTitle(String key, int num, int limit);
 
-    @Select("SELECT * FROM exam WHERE id > #{num} ORDER BY id LIMIT #{limit}")
+    @Select("SELECT * FROM exam, e_exam WHERE e_exam.num = exam.label and id > #{num} ORDER BY id LIMIT #{limit}")
+    @Results({@Result(property = "label.num", column = "num"),
+            @Result(property = "label.msg", column = "msg"),
+            @Result(property = "label.english", column = "english"),})
     List<ExamModel> getExamById(int num, int limit);
 
-    @Select("SELECT id, label, count FROM exam")
+    @Select("SELECT id, label, count, e_exam.* FROM exam, e_exam")
+    @Results({@Result(property = "label.num", column = "num"),
+            @Result(property = "label.msg", column = "msg"),
+            @Result(property = "label.english", column = "english"),})
     List<ExamModel> getAllExamCount();
 
-    @Select("SELECT * FROM exam WHERE id = #{id}")
+    @Select("SELECT * FROM exam, e_exam WHERE e_exam.num = exam.label and id = #{id}")
+    @Results({@Result(property = "label.num", column = "num"),
+            @Result(property = "label.msg", column = "msg"),
+            @Result(property = "label.english", column = "english"),})
     ExamModel getExam(int id);
 
     @Select("SELECT * FROM exam_content WHERE id = #{id}")

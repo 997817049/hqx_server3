@@ -6,28 +6,28 @@ import java.io.Serializable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ClassifyModel implements Serializable {
-    private Integer num;    //类型
+    private int num;    //类型
     private String msg;    //描述
     private String english;    //描述
 
-    public ClassifyModel(Integer num, String msg, String english) {
+    public ClassifyModel(int num, String msg, String english) {
         this.num = num;
         this.msg = msg;
         this.english = english;
     }
 
-    public ClassifyModel(Integer num) {
+    public ClassifyModel(int num) {
         this.num = num;
     }
 
     public ClassifyModel() {
     }
 
-    public Integer getNum() {
+    public int getNum() {
         return num;
     }
 
-    public void setNum(Integer num) {
+    public void setNum(int num) {
         this.num = num;
     }
 

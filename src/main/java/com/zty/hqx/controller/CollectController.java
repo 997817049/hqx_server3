@@ -1,6 +1,7 @@
 package com.zty.hqx.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.zty.hqx.annotation.IsModel;
 import com.zty.hqx.classify.CodeMsg;
 import com.zty.hqx.classify.EModel;
 import com.zty.hqx.classify.EStudyPart;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -22,6 +24,7 @@ import java.util.List;
  * 处理全部收藏
  * */
 @Controller
+@Validated
 public class CollectController {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -37,8 +40,8 @@ public class CollectController {
      * */
     @RequestMapping(value = "/collect/apply")
     @ResponseBody
-//    @CacheEvict(value="collect", key="'userId_'+#userId + '_' + #model + '_'+ #part")
-    public void dealCollect(int userId, String model, String part, int id, String progress) {
+    @CacheEvict(value="collect", key="'userId_'+#userId + '_' + #model + '_'+ #part")
+    public void dealCollect(int userId, @IsModel String model, String part, int id, String progress) {
         logger.info(userId + "用户收藏了" + model + "的" + id);
         int modelId = EModel.getEnumFromString(model.toUpperCase()).getType();
         int partId = 0;
@@ -54,8 +57,8 @@ public class CollectController {
      * */
     @RequestMapping(value = "/collect/cancel")
     @ResponseBody
-//    @CacheEvict(value="collect", key="'userId_'+#userId + '_' + #model + '_'+ #part")
-    public void cancelCollect(int userId, String model, String part, int id) {
+    @CacheEvict(value="collect", key="'userId_'+#userId + '_' + #model + '_'+ #part")
+    public void cancelCollect(int userId, @IsModel String model, String part, int id) {
         logger.info(userId + "用户取消收藏了" + part + "的" + id);
         int modelId = EModel.getEnumFromString(model.toUpperCase()).getType();
         int partId = 0;
@@ -71,8 +74,8 @@ public class CollectController {
      * */
     @RequestMapping(value = "/collect/load")
     @ResponseBody
-//    @Cacheable(value="collect", key="'userId_'+#userId + '_' + #model + '_'+ #part")
-    public Result<String> getCollect(int userId, String model, String part) {
+    @Cacheable(value="collect", key="'userId_'+#userId + '_' + #model + '_'+ #part")
+    public Result<String> getCollect(int userId, @IsModel String model, String part) {
         logger.info(userId + "用户获取收藏" + model + "的" + part);
         EModel emodel = EModel.getEnumFromString(model.toUpperCase());
         List list = null;

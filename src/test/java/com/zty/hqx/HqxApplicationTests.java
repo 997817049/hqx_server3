@@ -63,7 +63,7 @@ class HqxApplicationTests {
         Random random = new Random();
         for(int i = 1; i < 31; i++){
             Calendar cal = Calendar.getInstance();
-            cal.setTime(df.parse("2020-03-30"));
+//            cal.setTime(df.parse("2020-03-30"));
             cal.add(Calendar.DATE, - i);
             Date d = cal.getTime();
             //插入的时间
