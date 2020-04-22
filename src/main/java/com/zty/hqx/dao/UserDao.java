@@ -3,6 +3,8 @@ package com.zty.hqx.dao;
 import com.zty.hqx.model.User;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 @Mapper
 public interface UserDao {
 
@@ -29,4 +31,7 @@ public interface UserDao {
 
     @Select("SELECT * FROM user_information WHERE id = #{id}")
     User getUserById(@Param("id") Integer stuId);
+
+    @Select("SELECT * FROM user_information")
+    List<User> getAllUser();
 }

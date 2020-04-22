@@ -1,18 +1,20 @@
 package com.zty.hqx.classify;
 
 public enum EModel {
-    MESS(0, "消息"),
-    STUDY(1, "学习"),
-    NEWS(2, "新闻"),
-    BASE(3, "基地"),
-    MY(4, "我的");
+    SCHOOL(0, "校园", "school"),
+    STUDY(1, "学习", "study"),
+    NEWS(2, "新闻", "news"),
+    BASE(3, "基地", "base"),
+    MY(4, "我的", "my");
 
     private int type;    //类型
     private String msg;    //描述
+    private String english;
 
-    EModel(int type, String msg) {
+    EModel(int type, String msg, String english) {
         this.type = type;
         this.msg = msg;
+        this.english = english;
     }
 
     public static EModel getEnumFromString(String string) {
@@ -28,6 +30,10 @@ public enum EModel {
 
     public String getMsg() {
         return msg;
+    }
+
+    public String getEnglish() {
+        return english;
     }
 
     @Override

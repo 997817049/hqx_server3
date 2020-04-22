@@ -77,7 +77,7 @@ public interface StudyExamDao {
     @Results({@Result(property = "label.num", column = "num"),
             @Result(property = "label.msg", column = "msg"),
             @Result(property = "label.english", column = "english"),})
-    List<ExamModel> getExamById(int num, int limit);
+    List<ExamModel> getExamByNum(int num, int limit);
 
     @Select("SELECT id, label, count, e_exam.* FROM exam, e_exam")
     @Results({@Result(property = "label.num", column = "num"),
@@ -89,7 +89,7 @@ public interface StudyExamDao {
     @Results({@Result(property = "label.num", column = "num"),
             @Result(property = "label.msg", column = "msg"),
             @Result(property = "label.english", column = "english"),})
-    ExamModel getExam(int id);
+    ExamModel getExamById(int id);
 
     @Select("SELECT * FROM exam_content WHERE id = #{id}")
     List<QuestionModel> getExamContent(int id);

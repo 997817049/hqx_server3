@@ -4,11 +4,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
 /**
@@ -38,27 +42,27 @@ public class LogAspect {
 
     //前置通知
     @Before("Pointcut()")
-    public void beforeMethod(JoinPoint joinPoint){
+    public void beforeMethod(JoinPoint joinPoint) throws ClassNotFoundException, NoSuchMethodException {
         startTime.set(System.currentTimeMillis());
         // 接收到请求，记录请求内容
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         if (attributes != null) {
             HttpServletRequest request = attributes.getRequest();
             String ip = request.getRemoteAddr();
-            String url = request.getRequestURL().toString();
+            String url = request.getRequestURI();//去除localhost的路径
             String type = request.getMethod();
-            String method = joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName();
-            String paras = Arrays.toString(joinPoint.getArgs());
-
-            logger.info("[" + ip + "] [" + url + "] [" + type + "] [" + method + "] " + paras);
+            //详细方法名 = 类名 + 方法名
+            String DeclaringMethodName = joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName();
+            // 参数值
+            Object[] args = joinPoint.getArgs();
+            String[] argNames = ((MethodSignature)joinPoint.getSignature()).getParameterNames(); // 参数名
+            StringBuilder para = new StringBuilder();
+            for(int i = 0; i < argNames.length; i++) {
+                para.append(argNames[i]).append("=").append(args[i]).append(" ");
+            }
+            logger.info("[" + ip + "] [" + url + "] [" + type + "] [" + DeclaringMethodName + "] [" + para.toString() + "]");
         }
     }
-
-    //@After: 后置通知
-//    @After("Pointcut()")
-//    public void afterMethod(JoinPoint joinPoint){
-//        log.info("调用了后置通知");
-//    }
 
     //@AfterRunning: 返回通知 rsult为返回内容
     @AfterReturning(value="Pointcut()",returning="result")

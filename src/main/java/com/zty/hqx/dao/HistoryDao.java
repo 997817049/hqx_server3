@@ -1,13 +1,27 @@
 package com.zty.hqx.dao;
 
+import com.zty.hqx.classify.EModel;
+import com.zty.hqx.model.BookModel;
 import com.zty.hqx.model.CollectModel;
+import com.zty.hqx.model.VideoModel;
 import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 @Mapper
 public interface HistoryDao {
     @Insert("INSERT INTO history(userId, modelId, partId, id, create_time, update_time) VALUES(#{userId}, #{modelId}, #{partId}, #{id}, now(), now())")
     void insertHistory(int userId, int modelId, int partId, int id);
 
-    @Select("SELECT userId, modelId, partId, id, progress FROM history WHERE userId = #{userId} and modelId = #{modelId} and partId = #{partId} ORDER BY create_time DESC LIMIT #{limit}")
-    CollectModel getRecentHistory(int userId, int modelId, int partId, int limit);
+    @Select("SELECT id FROM history WHERE userId = #{userId} and modelId = #{modelId} and partId = #{partId} ORDER BY create_time DESC LIMIT #{limit} OFFSET #{num}")
+    List<Integer> getHistory(int userId, int modelId, int partId, int num, int limit);
+
+    @Select("SELECT id FROM history WHERE userId = #{userId} and modelId = #{modelId} and partId = #{partId} and create_time like '${time}%'")
+    List<Integer> getHistoryByTime(int userId, int modelId, int partId, String time);
+
+    @Delete("DELETE FROM history WHERE modelId = #{modelId} and id = #{id}")
+    void deleteAllBaseHistory(int modelId, int id);
+
+    @Delete("DELETE FROM history WHERE modelId = #{modelId} and partId = #{partId} and id = #{id}")
+    void deleteAllHistory(int modelId, int partId, int id);
 }

@@ -1,4 +1,4 @@
-serverIp = "http://192.168.0.103:8081/";
+serverIp = "http://192.168.0.103:8888/";
 nginxIp = "http://192.168.0.103:8000/resource/";
 cityList = {};
 

@@ -24,8 +24,6 @@ import java.util.List;
  * */
 @Controller
 public class CountController {
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
     @Autowired
     ClassifyService classifyService;
     @Autowired
@@ -43,8 +41,6 @@ public class CountController {
     @RequestMapping("/manage/chart")
     @ResponseBody
     public Result<HashMap<String, List<String>>> getChart(String model, String part, String time, int type){
-        logger.info("获取" + model + "中" + part + "的" + time + "的" + (type == 0 ? "top" : "bottom") +
-                "浏览排行榜");
         HashMap<String, List<String>> hashMap = countService.getChart(model, part, time, type);
         return Result.success(hashMap);
     }
@@ -57,7 +53,6 @@ public class CountController {
     @RequestMapping("/manage/count")
     @ResponseBody
     public Result<HashMap<String, List<CountModel>>> getCount(String model, String part, String time){
-        logger.info("获取" + part + "的" + time + "的浏览量");
         EModel emodel = EModel.getEnumFromString(model.toUpperCase());
         HashMap<String, List<CountModel>> hashMap = new HashMap<>();
         switch (emodel){
@@ -76,7 +71,6 @@ public class CountController {
     @RequestMapping("/manage/contrast")
     @ResponseBody
     public Result<List<HashMap<String, Integer>>> getContrastCount(String model, String part, String time){
-        logger.info("获取" + part + "的" + time + "的浏览量对比");
         EModel emodel = EModel.getEnumFromString(model.toUpperCase());
         List<HashMap<String, Integer>> list = new ArrayList<>();
         switch (emodel){

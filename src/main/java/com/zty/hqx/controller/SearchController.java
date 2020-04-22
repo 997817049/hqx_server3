@@ -8,9 +8,8 @@ import com.zty.hqx.model.*;
 import com.zty.hqx.service.BaseService;
 import com.zty.hqx.service.SearchService;
 import com.zty.hqx.service.StudyService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,9 +19,8 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Controller
+@CacheConfig(cacheNames = "hqx")
 public class SearchController {
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
     @Autowired
     SearchService searchService;
     @Autowired
@@ -36,7 +34,6 @@ public class SearchController {
     @RequestMapping(value = "/delete/history_word")
     @ResponseBody
     public Result<Boolean> deleteHistoryWord(int userId){
-        logger.info("删除历史查找词汇" + userId);
         searchService.deleteHistoryWord(userId);
         return Result.success(true);
     }
@@ -44,8 +41,7 @@ public class SearchController {
     @RequestMapping(value = "/search/history_word")
     @ResponseBody
     public Result<List<String>> getHistoryWord(int userId) {
-        logger.info("获取历史查找词汇" + userId);
-        List<String> list = searchService.getHistoryWord(userId);
+        List<String> list = searchService.getHistoryWord(userId, 5);
         if(list == null){
             return Result.error();
         }
@@ -55,7 +51,6 @@ public class SearchController {
     @RequestMapping(value = "/search/hotword")
     @ResponseBody
     public Result<List<String>> getHotWord(int userId) {
-        logger.info("获取热点词汇");
         List<String> list = searchService.getHotWord();
         if(list == null){
             return Result.error();
@@ -72,16 +67,15 @@ public class SearchController {
      * */
     @RequestMapping(value = "/search")
     @ResponseBody
-    @Cacheable(value="search", key="'word_'+ #word + '_' + #model + '_' + #part + '_num_' + #num + '_limit_' + #limit")
+    @Cacheable(key="'search:' + #model +  ':' + #part + ':' + #word + ':num_' + #num + '_limit_' + #limit")
     public Result<String> dealSearch(int userId, @NotBlank String word, @IsModel String model, String part, int num, int limit) {
-        logger.info("查找" + word + "在" + model + "**" + part + "中");
         EModel emodel = EModel.getEnumFromString(model.toUpperCase());
         if(limit == 3){
             searchService.updateWordCount(userId, word);
         }
         String rs;
         switch (emodel){
-            case BASE: rs = JSON.toJSONString(baseService.getBaseByKey(userId, num, limit, word));break;
+            case BASE: rs = JSON.toJSONString(baseService.getBaseByKey(num, limit, word));break;
             case STUDY:
                 EStudyPart epart = EStudyPart.getEnumFromString(part.toUpperCase());
                 rs = studyService.getStudyByKey(userId, word, epart, num, limit);

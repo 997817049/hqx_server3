@@ -1,7 +1,6 @@
 package com.zty.hqx.service;
 
 import com.zty.hqx.classify.EModel;
-import com.zty.hqx.classify.EStudyPart;
 import com.zty.hqx.dao.BaseDao;
 import com.zty.hqx.dao.CollectDao;
 import com.zty.hqx.dao.ResourceDao;
@@ -14,8 +13,6 @@ import com.zty.hqx.util.ZtyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -28,6 +25,10 @@ public class BaseService {
     ResourceDao resourceDao;
     @Autowired
     UserDao userDao;
+    @Autowired
+    CollectService collectService;
+    @Autowired
+    HistoryService historyService;
 
     public void updateBaseCount(int id){
         baseDao.updateBaseCount(id);
@@ -43,20 +44,28 @@ public class BaseService {
         baseDao.updateBase(baseModel);
     }
 
-    public BaseModel deleteBase(int id) {
+    public boolean deleteBase(int id) {
         BaseModel baseModel = baseDao.getBaseById(id);
         baseDao.deleteBase(id);
         //删除外链
         String pic = baseModel.getPicUrl();
         String html = baseModel.getHtmlUrl();
+        //删除文件
         try {
             resourceDao.deletePic(pic);
             FileUtil.deleteFile(ZtyUtil.dealSqlPathToFile(pic));
-        } catch (Exception e){ }
-        System.out.println(ZtyUtil.dealSqlPathToFile(html));
-        boolean rs = FileUtil.deleteFile(ZtyUtil.dealSqlPathToFile(html));
-        System.out.println(rs);
-        return baseModel;
+        } catch (Exception e){
+            return false;
+        } finally {
+            System.out.println(ZtyUtil.dealSqlPathToFile(html));
+            boolean rs = FileUtil.deleteFile(ZtyUtil.dealSqlPathToFile(html));
+            System.out.println(rs);
+            //删除全部收藏
+            collectService.deleteAllCollect(EModel.BASE, null, id);
+            //删除全部历史记录
+            historyService.deleteAllHistory(EModel.BASE.getType(), 0, id);
+        }
+        return true;
     }
 
     public void insertBase(BaseModel baseModel) {
@@ -80,19 +89,23 @@ public class BaseService {
         return dealBaseCollect(userId, model);
     }
 
-    public List<BaseModel> getBase(int userId, int num, int limit) {
-        List<BaseModel> list = baseDao.getBase(num, limit);
-        for (int i = 0; i < list.size(); i++) {
-            list.set(i, dealBaseCollect(userId, list.get(i)));
-        }
-        return list;
+    public List<BaseModel> getHotBase(int num, int limit) {
+        return baseDao.getHotBase(num, limit);
     }
 
-    public List<BaseModel> getBaseByKey(int userId, int num, int limit, String key) {
+    public List<BaseModel> getBaseByAddress(String province, String city, int num, int limit) {
+        return baseDao.getBaseByAddress(province, city, num, limit);
+    }
+
+    public List<BaseModel> getBase(int num, int limit) {
+        return baseDao.getBase(num, limit);
+    }
+
+    public List<BaseModel> getBaseByKey(int num, int limit, String key) {
         List<BaseModel> list = baseDao.getBaseByKey(key, num, limit);
-        for (int i = 0; i < list.size(); i++) {
-            list.set(i, dealBaseCollect(userId, list.get(i)));
-        }
+//        for (int i = 0; i < list.size(); i++) {
+//            list.set(i, dealBaseCollect(userId, list.get(i)));
+//        }
         return list;
     }
 

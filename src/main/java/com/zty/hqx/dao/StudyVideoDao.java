@@ -51,7 +51,7 @@ public interface StudyVideoDao {
     @Select("SELECT * FROM ${part}, e_${part} WHERE e_${part}.num = ${part}.label ORDER BY count DESC LIMIT #{limit}")
     @Results({
             @Result(property = "picUrl", column = "pic"),
-            @Result(property = "label.num", column = "num"),
+            @Result(property = "label.num", column = "e_${part}.num"),
             @Result(property = "label.msg", column = "msg"),
             @Result(property = "label.english", column = "english")
     })
@@ -60,7 +60,7 @@ public interface StudyVideoDao {
     @Select("SELECT * FROM ${part}, e_${part} WHERE e_${part}.num = ${part}.label ORDER BY ${part}.create_time DESC LIMIT #{limit}")
     @Results({
             @Result(property = "picUrl", column = "pic"),
-            @Result(property = "label.num", column = "num"),
+            @Result(property = "label.num", column = "e_${part}.num"),
             @Result(property = "label.msg", column = "msg"),
             @Result(property = "label.english", column = "english")
     })
@@ -69,7 +69,7 @@ public interface StudyVideoDao {
     @Select("SELECT * FROM ${part}, e_${part} WHERE label = #{label} and e_${part}.num = ${part}.label and id > #{num} ORDER BY id LIMIT #{limit}")
     @Results({
             @Result(property = "picUrl", column = "pic"),
-            @Result(property = "label.num", column = "num"),
+            @Result(property = "label.num", column = "e_${part}.num"),
             @Result(property = "label.msg", column = "msg"),
             @Result(property = "label.english", column = "english")
     })
@@ -78,16 +78,25 @@ public interface StudyVideoDao {
     @Select("SELECT * FROM ${part}, e_${part} WHERE e_${part}.num = ${part}.label and title LIKE '%${key}%' and id > #{num} ORDER BY id LIMIT #{limit}")
     @Results({
             @Result(property = "picUrl", column = "pic"),
-            @Result(property = "label.num", column = "num"),
+            @Result(property = "label.num", column = "e_${part}.num"),
             @Result(property = "label.msg", column = "msg"),
             @Result(property = "label.english", column = "english")
     })
     List<VideoModel> getVideoByTitle(String part, String key, int num, int limit);
 
+    @Select("SELECT * FROM ${part}, e_${part} WHERE e_${part}.num = ${part}.label and title LIKE '%${key}%' ORDER BY id")
+    @Results({
+            @Result(property = "picUrl", column = "pic"),
+            @Result(property = "label.num", column = "e_${part}.num"),
+            @Result(property = "label.msg", column = "msg"),
+            @Result(property = "label.english", column = "english")
+    })
+    List<VideoModel> getVideoByKey(String part, String key);
+
     @Select("SELECT * FROM ${part}, e_${part} WHERE e_${part}.num = ${part}.label and id > #{num} ORDER BY id LIMIT #{limit}")
     @Results({
             @Result(property = "picUrl", column = "pic"),
-            @Result(property = "label.num", column = "num"),
+            @Result(property = "label.num", column = "e_${part}.num"),
             @Result(property = "label.msg", column = "msg"),
             @Result(property = "label.english", column = "english")
     })
@@ -96,7 +105,7 @@ public interface StudyVideoDao {
     @Select("SELECT id, label, count, e_${part}.* FROM ${part}, e_${part} where e_${part}.num = ${part}.label")
     @Results({
             @Result(property = "picUrl", column = "pic"),
-            @Result(property = "label.num", column = "num"),
+            @Result(property = "label.num", column = "e_${part}.num"),
             @Result(property = "label.msg", column = "msg"),
             @Result(property = "label.english", column = "english")
     })
@@ -105,7 +114,7 @@ public interface StudyVideoDao {
     @Select("SELECT * FROM ${part}, e_${part} WHERE id = #{id} and e_${part}.num = ${part}.label")
     @Results({
             @Result(property = "picUrl", column = "pic"),
-            @Result(property = "label.num", column = "num"),
+            @Result(property = "label.num", column = "e_${part}.num"),
             @Result(property = "label.msg", column = "msg"),
             @Result(property = "label.english", column = "english")
     })

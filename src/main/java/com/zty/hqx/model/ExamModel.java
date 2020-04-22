@@ -57,10 +57,6 @@ public class ExamModel implements Serializable {
         this.label = label;
     }
 
-    public void updateClassify(ClassifyModel label) {
-        this.label = label;
-    }
-
     public int getCount() {
         return count;
     }

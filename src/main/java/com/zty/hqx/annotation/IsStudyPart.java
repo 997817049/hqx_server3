@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Documented
 @Constraint(validatedBy = {IsStudyPartValidator.class})
 public @interface IsStudyPart {
-    String message() default "文件错误";
+    String message() default "studyPart错误";
 
     Class<?>[] groups() default {};
 

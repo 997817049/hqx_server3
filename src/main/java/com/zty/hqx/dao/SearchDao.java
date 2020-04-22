@@ -15,9 +15,12 @@ public interface SearchDao {
     @Update("insert into search_history set userId=#{userId}, word = '${word}', create_time = NOW() on duplicate key update count=count+1;")
     void insertUserWord(int userId, String word);
 
-    @Select("SELECT word FROM search_history ORDER BY update_time DESC LIMIT 5")
-    List<String> getUserHistoryWord(int userId);
+    @Select("SELECT word FROM search_history where userId = #{userId} ORDER BY update_time DESC LIMIT #{limit}")
+    List<String> getUserHistoryWord(int userId, int limit);
 
-    @Delete("DELETE FROM search_history WHERE id = #{userId}")
+    @Select("SELECT word FROM search_history where userId = #{userId} and update_time = '${time}'")
+    List<String> getUserHistoryWordByTime(int userId, String time);
+
+    @Delete("DELETE FROM search_history WHERE userId = #{userId}")
     boolean deleteHistoryWord (int userId);
 }

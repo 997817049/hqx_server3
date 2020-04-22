@@ -1,13 +1,10 @@
 package com.zty.hqx.controller;
 
 import com.zty.hqx.annotation.IsMultipartFile;
-import com.zty.hqx.classify.CodeMsg;
 import com.zty.hqx.model.*;
-import com.zty.hqx.service.ArticleWriteSevice;
 import com.zty.hqx.service.ResourceService;
 import com.zty.hqx.util.FileFactory;
 import com.zty.hqx.util.FileUtil;
-import com.zty.hqx.util.IDUtil;
 import com.zty.hqx.util.ZtyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +35,6 @@ public class UpLoadController {
 
     @Value("${hqx.absoluteStaticUrl}")
     private String absolutePath;
-
-    @Autowired
-    public ArticleWriteSevice writeSevice;
 
     @Autowired
     ResourceService resourceService;
@@ -194,75 +188,4 @@ public class UpLoadController {
             return Result.success(path);
         }
     }
-
-// -----------------------------------------资源上传 fy-----------------------------------------------
-
-    /**
-     * 生成并上传HTML文章 并 保存文件信息至数据库
-     * @param html       HTML
-     * @param part       模块名
-     * @param title      文章标题
-     * @param type       文章类型
-     * @param recommend  推荐形式
-     * @param picUrl     图片路径
-     * @return
-     */
-    @RequestMapping("/hqx_update/html")
-    @ResponseBody
-    public Result<String> setHtmlUrl(String html, String part, String title, String type, Integer recommend, String picUrl) {
-        String fileName = IDUtil.getIdByTimeAnd3Random() + ".html";
-        String filePath = absolutePath + part + "/html/" + fileName;
-        String fileUrl = staticUrl + part + "/html/" + fileName;
-        // result包含的是文件全路径名
-        String path = FileUtil.saveFileByBytes(filePath, html.getBytes());
-        if (path != null) {
-            // 生成文章实例
-            Article article = new Article();
-            article.setTitle(title);
-            article.setType(type);
-            article.setRecommend(recommend);
-            article.setHtmlUrl(fileUrl);
-            article.setPicUrl(picUrl);
-            article.setDate(new Date(System.currentTimeMillis()).toString());
-            // 保存文章信息至数据库 存储进数据库的url应该是静态资源全url
-            boolean write = writeSevice.saveArticle(part, article);
-            if (!write) {
-                boolean remove = FileUtil.removeFile(filePath);
-                // 删除失败 记录 TODO
-                return Result.error(CodeMsg.DATABASE_UNKNOW_ERROR);
-            }
-        }
-        return Result.success(fileUrl);
-    }
-
-    /**
-     * 上传图片
-     * @param file  图片文件
-     * @param part  模块名称
-     * @return      包含图片路径
-     */
-    @RequestMapping("/hqx_update/image")
-    @ResponseBody
-    public ImgInfo setImgUrl(@RequestParam("myFile") MultipartFile file, String part) {
-        String originalFilename = file.getOriginalFilename();
-        String tail = originalFilename.substring(originalFilename.lastIndexOf("."));
-        String fileName = IDUtil.getIdByTimeAnd3Random() + tail;
-        String filePath = absolutePath + part + "/image/" + fileName;
-        String fileUrl = staticUrl + part + "/image/" + fileName;
-
-        String path = null;
-        try {
-            path = FileUtil.saveFileByBytes(filePath, file.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ImgInfo(1001, new String[]{"文件上传错误 file update error"});
-        }
-
-        String[] values = {fileUrl};
-
-        ImgInfo imgInfo = new ImgInfo(0, values);
-
-        return imgInfo;
-    }
-
 }

@@ -499,6 +499,10 @@
         $("#book_content").hide();
         $("#info").hide();
         $("#info").html("");
+        var picObj = document.getElementById("choosePic") ;
+        picObj.outerHTML=picObj.outerHTML;
+        var fileObj = document.getElementById("chooseFile") ;
+        fileObj.outerHTML=fileObj.outerHTML;
         form.render();
     }
 

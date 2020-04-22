@@ -79,7 +79,7 @@ public interface StudyBookDao {
             @Result(property = "label.num", column = "num"),
             @Result(property = "label.msg", column = "msg"),
             @Result(property = "label.english", column = "english"),})
-    List<BookModel> getBookById(int num, int limit);
+    List<BookModel> getBookByNum(int num, int limit);
 
     @Select("SELECT * FROM book, e_book WHERE book.id = #{id} AND e_book.num = book.label;")
     @Results({@Result(property = "picUrl", column = "pic"),

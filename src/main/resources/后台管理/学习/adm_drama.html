@@ -445,6 +445,8 @@
     }
 
     function dealCancel() {
+        var obj = document.getElementById("choosePic") ;
+        obj.outerHTML=obj.outerHTML;
         $("#video_content").hide();
     }
 
@@ -494,6 +496,8 @@
         $(".file-box").hide();
         $("#info").html("");
         $("#info").hide();
+        var obj = document.getElementById("choosePic") ;
+        obj.outerHTML=obj.outerHTML;
         $("#video_content").hide();
     }
 

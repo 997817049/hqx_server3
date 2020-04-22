@@ -3,6 +3,7 @@ package com.zty.hqx.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * 电视
@@ -124,6 +125,25 @@ public class VideoModel implements Serializable {
 
     public void setProgress(String progress) {
         this.progress = progress;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        VideoModel model = (VideoModel) o;
+        return id == model.id &&
+                num == model.num &&
+                Objects.equals(title, model.title) &&
+                Objects.equals(label, model.label) &&
+                Objects.equals(actor, model.actor) &&
+                Objects.equals(synopsis, model.synopsis) &&
+                Objects.equals(picUrl, model.picUrl);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, label, actor, num, synopsis, picUrl);
     }
 
     @Override

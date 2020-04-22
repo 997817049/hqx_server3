@@ -1,6 +1,5 @@
 package com.zty.hqx.bean;
 
-
 import com.zty.hqx.annotation.IsMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 

@@ -15,4 +15,17 @@ public class ClassifyService {
     public List<ClassifyModel> getClassify(String part){
         return classifyDao.getClassify(part);
     }
+
+    public void insertClassify(String part, ClassifyModel model){
+        classifyDao.insertClassify(part, model);
+    }
+
+    public boolean deleteClassify(String part, int num){
+        try {
+            classifyDao.deleteClassify(part, num);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

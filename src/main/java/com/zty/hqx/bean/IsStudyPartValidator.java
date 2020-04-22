@@ -8,9 +8,7 @@ import javax.validation.ConstraintValidatorContext;
 
 public class IsStudyPartValidator implements ConstraintValidator<IsStudyPart, String> {
     @Override
-    public void initialize(IsStudyPart constraintAnnotation) {
-
-    }
+    public void initialize(IsStudyPart constraintAnnotation) { }
 
     @Override
     public boolean isValid(String part, ConstraintValidatorContext constraintValidatorContext) {

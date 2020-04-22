@@ -5,6 +5,8 @@ import com.zty.hqx.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserService {
 
@@ -18,4 +20,5 @@ public class UserService {
     public User getUserById(Integer stuId) {
         return userDao.getUserById(stuId);
     }
+
 }

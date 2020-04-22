@@ -20,8 +20,8 @@ public class SearchService {
         return searchDao.deleteHistoryWord(userId);
     }
 
-    public List<String> getHistoryWord(int userId){
-        return searchDao.getUserHistoryWord(userId);
+    public List<String> getHistoryWord(int userId, int limit){
+        return searchDao.getUserHistoryWord(userId, limit);
     }
 
     public List<String> getHotWord(){

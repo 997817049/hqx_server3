@@ -2,24 +2,35 @@ package com.zty.hqx.controller;
 
 import com.zty.hqx.model.BookModel;
 import com.zty.hqx.model.Result;
+import com.zty.hqx.model.VideoModel;
 import com.zty.hqx.service.HistoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.List;
+
 /**
  * 处理历史记录
  * */
 @Controller
+@CacheConfig(cacheNames = "hqx")
 public class HistoryController {
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
     @Autowired
     HistoryService historyService;
+
+    @RequestMapping(value = "/history/study/video")
+    @ResponseBody
+    @Cacheable(key="'history:' + #part + ':' + #userId + ':num_' + #num + '_limit_'+ #limit")
+    public Result<List<VideoModel>> getVideoHistory(int userId, String part, int num, int limit) {
+        List<VideoModel> list = historyService.getVideoHistory(userId, part, num, limit);
+        return Result.success(list);
+    }
 
     /**
      * 历史记录 获取用户最近读的一本书
@@ -31,10 +42,9 @@ public class HistoryController {
      * */
     @RequestMapping(value = "/history/study/book")
     @ResponseBody
-    @Cacheable(value="history_book", key="'userId_'+#userId")
+    @Cacheable(key="'history:book:userId_'+#userId")
     public Result<BookModel> getRecentRead(int userId, int limit) {
-        logger.info("book获取" + userId + "的历史记录");
-        BookModel bookModel = historyService.getBookRecentHistory(userId, limit);
+        BookModel bookModel = historyService.getBookHistory(userId, 0, limit);
         return Result.success(bookModel);
     }
 }

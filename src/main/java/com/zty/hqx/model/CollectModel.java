@@ -62,8 +62,8 @@ public class CollectModel implements Serializable {
         return part.getType();
     }
 
-    public void setPart(int part) {
-        this.part = EStudyPart.values()[part];
+    public void setPart(EStudyPart part) {
+        this.part = part;
     }
 
     public int getId() {

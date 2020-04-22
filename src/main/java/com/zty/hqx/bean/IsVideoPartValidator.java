@@ -2,7 +2,6 @@ package com.zty.hqx.bean;
 
 import com.zty.hqx.annotation.IsVideoPart;
 import com.zty.hqx.classify.EStudyPart;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 

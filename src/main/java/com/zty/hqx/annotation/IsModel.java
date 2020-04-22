@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Documented
 @Constraint(validatedBy = {IsModelValidator.class})
 public @interface IsModel {
-    String message() default "文件错误";
+    String message() default "model错误";
 
     Class<?>[] groups() default {};
 
