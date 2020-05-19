@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <title>书籍管理</title>
+    <link href="../layui/css/layui.css" rel="stylesheet" type="text/css">
+    <link href="../css/common.css" type="text/css" rel="stylesheet">
+    <link href="../css/nav.css" rel="stylesheet" type="text/css">
+    <link href="../css/iconfont.css" rel="stylesheet" type="text/css">
+    <link href="../css/add.css" type="text/css" rel="stylesheet">
+    <script src="../js/public.js"></script>
+    <script src="../js/jquery-3.2.1.min.js"></script>
+    <script src="../layui/layui.js"></script>
+    <script src="../js/alert.js"></script>
+    <script src="../js/echarts.min.js"></script>
+    <script src="../js/spark-md5.min.js"></script>
+    <script src="../js/nav.js" type="text/javascript"></script>
+</head>
+
+<body>
+<div th:replace="template::topbar"></div>
+<div th:replace="template::leftbar"></div>
+
+<div th:replace="template::bookLeftSubBar(select='adm')"></div>
+<!--主内容框架-->
+<div class="main_height main_index lt" style="background: #f2f4f8;">
+    <div class="layui-btn-group demoTable jzy_w_max br_h_0 tabTop">
+        <span>书籍列表</span>
+    </div>
+    <div class="tree_left" style="width: 100%">
+        <div class="layui-form">
+            <div id="book_content" style="display: none">
+                <!--名称-->
+                <div class="layui-form-item" style="margin-top:20px; width: 90%">
+                    <label class="layui-form-label">名称</label>
+                    <div class="layui-input-block">
+                        <input id="title" type="text" name="title" placeholder="请输入标题" class="layui-input">
+                    </div>
+                </div>
+                <!--标签-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">标签</label>
+                    <div class="layui-input-block" style="width: 30%">
+                        <select id="label" name="label" lay-filter="label">
+                        </select>
+                    </div>
+                </div>
+                <!--作者-->
+                <div class="layui-form-item" style="width: 90%">
+                    <label class="layui-form-label">作者</label>
+                    <div class="layui-input-block">
+                        <input id="author" type="text" name="title" placeholder="请输入作者名称" class="layui-input">
+                    </div>
+                </div>
+                <!--简介-->
+                <div class="layui-form-item" style="width: 90%">
+                    <label class="layui-form-label">简介</label>
+                    <div class="layui-input-block">
+                        <textarea id="synopsis" placeholder="请输入简介" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                <!--上传图片-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">图片</label>
+                    <div class="layui-input-block">
+                        <form action="" method="" class="transfer-files-wrapper">
+                            <!--图片预览-->
+                            <div class="file-box"></div>
+                            <!--上传图片-->
+                            <div style="line-height:40px; display: inline-block;">
+                                <input id="choosePic" type="file" name="pic" onchange="picChooseFn(event)">
+                            </div>
+                            <!--文件信息-->
+                            <div id="picInfo" class="info"></div>
+                        </form>
+                    </div>
+                </div>
+                <!--上传文件-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">书籍</label>
+                    <div class="layui-input-block">
+                        <input id="fileUrl" type="text" name="title" placeholder="请输入标题" class="layui-input" style="width: 30%">
+                        <form action="" method="" class="transfer-files-wrapper">
+                            <!--上传文件-->
+                            <div style="display: inline-block; line-height: 40px;">
+                                <input id="chooseFile" type="file" name="file" class="upload_pic"
+                                       onchange="fileChooseFn(event)">
+                            </div>
+                            <!--文件信息-->
+                            <div id="fileInfo" class="info"></div>
+                        </form>
+                    </div>
+                </div>
+                <!--消息-->
+                <div id="info-wrapper" class="layui-form-item" style="width: 90%">
+                    <div class="layui-input-block" style="line-height: 36px; ">
+                        <!--消息-->
+                        <div id="info" style="font-size: 14px;font-weight: bold;color: red;"></div>
+                    </div>
+                </div>
+                <!--按钮-->
+                <div class="layui-form-item" style="width: 90%">
+                    <div class="layui-input-block" style="float: right;">
+                        <button id="addQuestion" class="layui-btn layui-btn-normal" onclick="dealConfirm()">确认</button>
+                        <button id="reset" class="layui-btn layui-btn-normal" onclick="dealCancel()">取消</button>
+                    </div>
+                </div>
+            </div>
+            <table id="demo" lay-filter="demo"></table>
+        </div>
+    </div>
+</div>
+</body>
+
+<script type="text/html" id="titleBar">
+    <div th:replace="~{template::editbar}"></div>
+    <div th:replace="~{template::findbar}"></div>
+</script>
+
+<script>
+    isPicAvailable = false;
+    isFileAvailable = false;
+    picFormData = new FormData();
+    fileFormData = new FormData();
+    formData = new FormData();
+
+    layui.use(['form', 'table', 'laydate', 'tree'], function () {
+        table = layui.table;
+        form = layui.form;
+
+        // 开启一个数据表格
+        table.render({
+            elem: '#demo'
+            , url: serverIp + "manage/study?userId=2&part=book"
+            , toolbar: '#titleBar' //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+            , page: true //开启分页
+            , limit: 10 //默认分页条数
+            , height: 531 //高度最大化
+            , cols: [
+                [ //表头
+                    {type: 'checkbox'} // 开启多选框
+                    , {field: 'id', title: 'ID', width: '7%', align: 'center', sort: true}
+                    , {field: 'title', title: '标题', width: '10%'}
+                    , {title: '分类', width: '10%', templet:"<div>{{d.label.msg}}</div>"}
+                    , {field: 'author', title: '作者', width: '10%'}
+                    , {field: 'synopsis', title: '简介', width: '15%'}
+                    , {field: 'picUrl', title: '图片路径', width: '15%'}
+                    , {field: 'fileUrl', title: '视频路径', width: '15%'}
+                    , {field: 'count', title: '浏览数', width: '10%', align: 'center', sort: true}
+                ]
+            ]
+        });
+
+        //头工具栏事件
+        table.on('toolbar(demo)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'search':search();break;
+                case 'delete':dealDelList(checkStatus, "book");break;
+                case 'edit':
+                    var checkList = checkStatus.data;
+                    if (checkList.length <= 0 || checkList.length > 1) {
+                        layer.alert("必须要选择一行记录");
+                        return;
+                    }
+                    var model = checkList[0];
+                    formData.set("id", model.id);
+                    formData.set("title", model.title);
+                    formData.set("label", model.label.num);
+                    formData.set("author", model.author);
+                    formData.set("synopsis", model.synopsis);
+                    formData.set("pic", model.picUrl);
+                    formData.set("file", model.fileUrl);
+                    $("#label").val(model.label.num);
+                    $("#title").val(model.title);
+                    $("#author").val(model.author);
+                    $("#synopsis").val(model.synopsis);
+                    var dom = '<img id="photo" width="100%" height="100%" alt="我是image图片文件" src=' + model.picUrl + ' title="" />';
+                    $(".file-box").show();
+                    $('.file-box').html(dom);
+                    $("#fileUrl").val(model.fileUrl);
+                    document.getElementById("fileUrl").disabled = "true";
+                    $("#book_content").show();
+                    form.render();
+                    break;
+                case 'LAYTABLE_PRINT':
+                    //todo 有问题
+                    layer.msg("该控件暂时无法使用");
+                    break;
+            }
+        });
+
+        getClassify("book");
+    });
+
+    function dealConfirm() {
+        $("#info").show();
+        var title_txt = document.getElementById("title").value;
+        if (title_txt === undefined || title_txt === null || title_txt.toString().trim().length <= 0) {
+            $("#info").html("title空");
+            return;
+        }
+
+        var flag = true;
+        if(formData.get("title") != title_txt){
+            flag = false;
+            $.ajax({
+                type: "POST",
+                url: serverIp + "test/study", // 后端服务器上传地址
+                async:false,//同步
+                data: {
+                    part:"book",
+                    title:title_txt
+                },
+                success: function (rs) {
+                    flag = rs;
+                    if(!rs){
+                        $("#info").html("title已存在");
+                    } else {
+                        formData.set("title", title_txt);
+                    }
+                },
+                error: function () {}
+            })
+        }
+        if(!flag || !checkParam()) return;
+
+        if (isPicAvailable) {
+            flag = false;
+            $("#info").html("图片传输中...");
+            $.ajax({
+                type: "POST",
+                url: serverIp + "upload/pic", // 后端服务器上传地址
+                data: picFormData,
+                cache: false, // 是否缓存
+                async:false,//是否异步执行
+                processData: false, // 是否处理发送的数据  (必须false才会避开jQuery对 formdata 的默认处理)
+                contentType: false, // 是否设置Content-Type请求头
+                success: function (rs) {
+                    if(rs.num === 1){
+                        $("#info").html("图片上传失败 请稍后再试");
+                    } else {
+                        formData.set("pic", rs.data);
+                        flag = true;
+                        $("#info").html("图片传输成功");
+                    }
+                },
+                error: function () {
+                    $("#info").html("图片上传失败 请稍后再试");
+                }
+            })
+        }
+        if(!flag) return;
+
+        if (isFileAvailable) {
+            flag = false;
+            $("#info").html("书籍传输中...");
+            $.ajax({
+                type: "POST",
+                url: serverIp + "upload/book", // 后端服务器上传地址
+                data: fileFormData,
+                cache: false, // 是否缓存
+                async:false,//是否异步执行
+                processData: false, // 是否处理发送的数据  (必须false才会避开jQuery对 formdata 的默认处理)
+                contentType: false, // 是否设置Content-Type请求头
+                success: function (rs) {
+                    if(rs.num === 1){
+                        $("#info").html("文件上传失败 请稍后再试");
+                    } else {
+                        formData.set("file", rs.data);
+                        flag = true;
+                        $("#info").html("文件传输成功");
+                    }
+                },
+                error: function () {
+                    $("#info").html("文件上传失败 请稍后再试");
+                }
+            })
+        }
+        if(!flag) return;
+        $("#info").html("信息传输中...");
+        $.ajax({
+            type: "POST",
+            url: serverIp + "update/study/book", // 后端服务器上传地址
+            data: formData,
+            cache: false, // 是否缓存
+            async: true, // 是否异步执行
+            processData: false, // 是否处理发送的数据  (必须false才会避开jQuery对 formdata 的默认处理)
+            contentType: false, // 是否设置Content-Type请求头
+            success: function () {
+                $("#info").html("上传成功");
+                recoverPara();
+                var page = $(".layui-laypage-em").next().html();
+                table.reload('demo', {
+                    where: {
+                        key: null
+                    },
+                    page: {curr: page}
+                });
+            },
+            error: function (returndata) {
+                $("#info").html("上传失败！请重试");
+            }
+        });
+    }
+
+    function dealCancel() {
+        recoverPara();
+    }
+
+    function recoverPara() {
+        isPicAvailable = false;
+        isFileAvailable = false;
+        picFormData = new FormData();
+        fileFormData = new FormData();
+        formData = new FormData();
+        $("#label").val('');
+        $("#title").val('');
+        $("#author").val('');
+        $("#synopsis").val('');
+        $('.file-box').html('');
+        $(".file-box").hide();
+        $("#fileUrl").val('');
+        document.getElementById("fileUrl").disabled = "";
+        $("#book_content").hide();
+        $("#info").hide();
+        $("#info").html("");
+        var picObj = document.getElementById("choosePic") ;
+        picObj.outerHTML=picObj.outerHTML;
+        var fileObj = document.getElementById("chooseFile") ;
+        fileObj.outerHTML=fileObj.outerHTML;
+        form.render();
+    }
+
+    //检查参数
+    function checkParam() {
+        var label = $("#label").val();
+        if(label < 1) {
+            $("#info").html("label不正确");
+            return false;
+        }
+        var author_txt = document.getElementById("author").value;
+        if (author_txt === undefined || author_txt === null || author_txt.toString().trim().length <= 0) {
+            $("#info").html("author空");
+            return false;
+        }
+        var synopsis_txt = document.getElementById("synopsis").value;
+        if (synopsis_txt === undefined || synopsis_txt === null || synopsis_txt.toString().trim().length <= 0) {
+            $("#info").html("synopsis空");
+            return false;
+        }
+        formData.set("label", label);
+        formData.set("author", author_txt);
+        formData.set("synopsis", synopsis_txt);
+        return true;
+    }
+
+    //文件选择完毕时
+    function fileChooseFn() {
+        var ofile = $("#chooseFile").get(0).files[0];//input file标签
+        if (ofile === null || ofile === undefined) return;
+        $('#fileInfo').show();
+        var otype = ofile.type || '获取失败';
+        var osize = ofile.size / 1054000;
+        if ('application/epub+zip' !== otype && 'application/epub' !== otype) {
+            $('#fileInfo').text("文件格式错误 请重新选择");
+            return;
+        }
+        if (osize.toFixed(2) > 10) {
+            $('#fileInfo').text(ofile.name + "，共" + osize.toFixed(2) + "MB。文件不得大于10MB");
+            return;
+        }
+        $('#fileInfo').hide();
+        isFileAvailable = true;
+        fileFormData.set("book", ofile);//将上传name属性名(注意：一定要和 file元素中的name名相同)，和file元素追加到FormData对象中去
+    }
+</script>
+</html>
