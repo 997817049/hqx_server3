@@ -58,7 +58,7 @@ public class TimerTask {
     @Scheduled(cron = "0 0 1 * * ? *")
     private void statisticalCount() {
         System.err.println("执行静态定时任务时间: " + LocalDateTime.now());
-        //基地
+        //base
         List<BaseModel> list = baseDao.getAllBaseCount();
         for(BaseModel model : list) {
             countDao.insertCount(EModel.BASE.getType(), 0, 0, model.getId(), yesterdayTime,  model.getCount());
@@ -103,7 +103,12 @@ public class TimerTask {
         List<User> userList = userDao.getAllUser();
         System.out.println("用户列表：" + userList);
         Set<Integer> userSet = userList.stream().map(User::getId).collect(Collectors.toSet());
-        HashMap<Integer, List<FavoriteWordModel>> redisUserWordMap = (HashMap<Integer, List<FavoriteWordModel>>) redisUtil.get("userWordMap");
+        HashMap<Integer, List<FavoriteWordModel>> redisUserWordMap = null;
+        try {
+            redisUserWordMap = (HashMap<Integer, List<FavoriteWordModel>>) redisUtil.get("hqx:userWordMap");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         System.out.println("redis中昨天的用户喜欢表:" + redisUserWordMap);
         HashMap<Integer, List<FavoriteWordModel>> newRedisUserWordMap = new HashMap<>();//今天的
         //今天生成的用户 - 喜好词列表 cf-idf
@@ -199,7 +204,11 @@ public class TimerTask {
             newRedisUserWordMap.put(userId, redisList);
         }
         //写入redis 关键词 覆盖原来的
-        redisUtil.set("userWordMap", newRedisUserWordMap);
+        try {
+            redisUtil.set("hqx:userWordMap", newRedisUserWordMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //存入用户喜好视频列表
         for (Map.Entry<Integer, List<FavoriteWordModel>> entry : newRedisUserWordMap.entrySet()){
@@ -208,9 +217,13 @@ public class TimerTask {
             for (int i = 2; i < 7; i++){
                 String part = EStudyPart.values()[i].getEnglish();
                 List<VideoModel> list = getVideoList(part, userId, wordList);
-                //删除原来的写入新的
-                redisUtil.remove("userVideoMap:" + part);
-                redisUtil.set("app:study:" + part + ":recommend:userId_" + userId, list);
+                try {
+                    //删除原来的写入新的
+                    redisUtil.remove("hqx:app:study:" + part + ":recommend" );
+                    redisUtil.set("hqx:app:study:" + part + ":recommend:userId_" + userId, list);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -297,7 +310,7 @@ public class TimerTask {
 
     //更新当天浏览量
     private void updateAllCount(){
-        //更新 基地 浏览量
+        //更新 base 浏览量
         countDao.updateAllCount("base");
         //更新 study 浏览量
         for (EStudyPart part : EStudyPart.values()){

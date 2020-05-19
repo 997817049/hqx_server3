@@ -43,7 +43,7 @@ public class CollectService {
 
     public void deleteCollect(CollectModel model) {
         if(model.getModel() == EModel.BASE.getType()){
-            collectDao.deleteBaseCollect(model);
+            collectDao.deleteAllBaseCollect(model.getId());
         } else {
             collectDao.deleteCollect(model);
         }
@@ -55,10 +55,10 @@ public class CollectService {
         collectModel.setModel(model.getType());
         collectModel.setId(id);
         if(model == EModel.BASE){
-            collectDao.deleteBaseCollect(collectModel);
+            collectDao.deleteAllBaseCollect(collectModel.getId());
         } else {
             collectModel.setPart(part);
-            collectDao.deleteAllCollect(collectModel);
+            collectDao.deleteAllStudyCollect(collectModel);
         }
     }
 

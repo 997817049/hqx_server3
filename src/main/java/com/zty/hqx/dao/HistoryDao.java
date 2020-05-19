@@ -13,11 +13,17 @@ public interface HistoryDao {
     @Insert("INSERT INTO history(userId, modelId, partId, id, create_time, update_time) VALUES(#{userId}, #{modelId}, #{partId}, #{id}, now(), now())")
     void insertHistory(int userId, int modelId, int partId, int id);
 
+    @Select("SELECT create_time FROM history WHERE userId = #{userId} and modelId = #{modelId} and partId = #{partId} and id = #{id}")
+    String getOneHistory(int userId, int modelId, int partId, int id);
+
     @Select("SELECT id FROM history WHERE userId = #{userId} and modelId = #{modelId} and partId = #{partId} ORDER BY create_time DESC LIMIT #{limit} OFFSET #{num}")
     List<Integer> getHistory(int userId, int modelId, int partId, int num, int limit);
 
     @Select("SELECT id FROM history WHERE userId = #{userId} and modelId = #{modelId} and partId = #{partId} and create_time like '${time}%'")
     List<Integer> getHistoryByTime(int userId, int modelId, int partId, String time);
+
+    @Update("update history set update_time = now() where userId = #{userId} and modelId = #{modelId} and partId = #{partId} and id = #{id}")
+    void updateHistory(int userId, int modelId, int partId, int id);
 
     @Delete("DELETE FROM history WHERE modelId = #{modelId} and id = #{id}")
     void deleteAllBaseHistory(int modelId, int id);

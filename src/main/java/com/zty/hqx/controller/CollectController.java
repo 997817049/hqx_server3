@@ -1,7 +1,8 @@
 package com.zty.hqx.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.zty.hqx.annotation.IsModel;
+import com.zty.hqx.util.RedisUtil;
+import com.zty.hqx.validator.IsModel;
 import com.zty.hqx.classify.EModel;
 import com.zty.hqx.classify.EStudyPart;
 import com.zty.hqx.model.*;
@@ -23,10 +24,11 @@ import java.util.List;
  * */
 @Controller
 @Validated
-@CacheConfig(cacheNames = "hqx")
 public class CollectController {
     @Autowired
     CollectService collectService;
+    @Autowired
+    RedisUtil redisUtil;
 
     /**
      * 收藏
@@ -34,21 +36,22 @@ public class CollectController {
      * */
     @RequestMapping(value = "/collect/apply")
     @ResponseBody
-    @Caching(evict = {
-            @CacheEvict(key="'collect:' + #model + ':'+ #part + ':userId_'+#userId"),
-            @CacheEvict(key="'app:study:exam:recent'"),//, condition = "#part eq 'exam'"
-            @CacheEvict(key="'app:study:exam:special'"),
-            @CacheEvict(key="'app:study:exam:info'")//id_id
-    })
-    public void applyCollect(int userId, @IsModel String model, String part, int id, String progress) {
-        System.out.println(part);
-        System.out.println();
+    public Result<Boolean> applyCollect(int userId, @IsModel String model, String part, int id, String progress) {
         int modelId = EModel.getEnumFromString(model.toUpperCase()).getType();
         int partId = 0;
         if(modelId == EModel.STUDY.getType()){
             partId = EStudyPart.getEnumFromString(part.toUpperCase()).getType();
+        } else {
+            progress = "0";
         }
         collectService.setCollect(new CollectModel(userId, modelId, partId, id, progress));
+        if(model.equals("base")){
+            redisUtil.remove("hqx:app:base:content:id_" + id);
+        } else if(part.equals("exam")){
+            redisUtil.remove("hqx:app:study:exam:recent", "hqx:app:study:exam:special", "hqx:app:study:exam:info:id_" + id);
+        }
+        redisUtil.remove("hqx:collect:" + model + ":" + part + ":userId_" + userId);
+        return Result.success(true);
     }
 
     /**
@@ -57,12 +60,6 @@ public class CollectController {
      * */
     @RequestMapping(value = "/collect/cancel")
     @ResponseBody
-    @Caching(evict = {
-        @CacheEvict(key="'collect:' + #model + ':'+ #part + ':userId_'+#userId"),
-        @CacheEvict(key="'app:study:exam:recent'"),//, condition = "#part eq 'exam'"
-        @CacheEvict(key="'app:study:exam:special'"),
-        @CacheEvict(key="'app:study:exam:info'")//id_id
-    })
     public void cancelCollect(int userId, @IsModel String model, String part, int id) {
         int modelId = EModel.getEnumFromString(model.toUpperCase()).getType();
         int partId = 0;
@@ -70,6 +67,12 @@ public class CollectController {
             partId = EStudyPart.getEnumFromString(part.toUpperCase()).getType();
         }
         collectService.deleteCollect(new CollectModel(userId, modelId, partId, id, null));
+        if(model.equals("base")){
+            redisUtil.remove("hqx:app:base:content:id_" + id);
+        } else if(part.equals("exam")){
+            redisUtil.remove("hqx:app:study:exam:recent", "hqx:app:study:exam:special", "hqx:app:study:exam:info:id_" + id);
+        }
+        redisUtil.remove("hqx:collect:" + model + ":" + part + ":userId_" + userId);
     }
 
     /**
@@ -78,8 +81,12 @@ public class CollectController {
      * */
     @RequestMapping(value = "/collect/load")
     @ResponseBody
-    @Cacheable(key="'collect:' + #model + ':'+ #part + ':userId_'+#userId")
     public Result<String> getCollect(int userId, @IsModel String model, String part) {
+        String redisKey = "hqx:collect:" + model + ":" + part + ":userId_" + userId;
+        Result<String> rs = (Result<String>) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
         EModel emodel = EModel.getEnumFromString(model.toUpperCase());
         List list = null;
         switch (emodel){
@@ -91,7 +98,9 @@ public class CollectController {
                 list = collectService.getStudyCollect(userId,epart);
                 break;
         }
-        String rs = JSON.toJSONString(list);
-        return Result.success(rs);
+        String str = JSON.toJSONString(list);
+        rs = Result.success(str);
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 }

@@ -1,7 +1,8 @@
 package com.zty.hqx.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.zty.hqx.annotation.IsModel;
+import com.zty.hqx.util.RedisUtil;
+import com.zty.hqx.validator.IsModel;
 import com.zty.hqx.classify.EModel;
 import com.zty.hqx.classify.EStudyPart;
 import com.zty.hqx.model.*;
@@ -19,7 +20,6 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Controller
-@CacheConfig(cacheNames = "hqx")
 public class SearchController {
     @Autowired
     SearchService searchService;
@@ -27,6 +27,8 @@ public class SearchController {
     BaseService baseService;
     @Autowired
     StudyService studyService;
+    @Autowired
+    RedisUtil redisUtil;
 
     /**
      * 删除某个用户搜索的全部词语
@@ -67,21 +69,27 @@ public class SearchController {
      * */
     @RequestMapping(value = "/search")
     @ResponseBody
-    @Cacheable(key="'search:' + #model +  ':' + #part + ':' + #word + ':num_' + #num + '_limit_' + #limit")
     public Result<String> dealSearch(int userId, @NotBlank String word, @IsModel String model, String part, int num, int limit) {
+        String redisKey = "hqx:search:" + model + ":" + part + ":" + word + ":num_" + num + "_limit_" + limit;
+        Result<String> rs = (Result<String>) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
         EModel emodel = EModel.getEnumFromString(model.toUpperCase());
         if(limit == 3){
             searchService.updateWordCount(userId, word);
         }
-        String rs;
+        String str;
         switch (emodel){
-            case BASE: rs = JSON.toJSONString(baseService.getBaseByKey(num, limit, word));break;
+            case BASE: str = JSON.toJSONString(baseService.getBaseByKey(num, limit, word));break;
             case STUDY:
                 EStudyPart epart = EStudyPart.getEnumFromString(part.toUpperCase());
-                rs = studyService.getStudyByKey(userId, word, epart, num, limit);
+                str = studyService.getStudyByKey(userId, word, epart, num, limit);
                 break;
             default: return Result.error();
         }
-        return Result.success(rs);
+        rs = Result.success(str);
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 }

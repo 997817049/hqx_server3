@@ -11,11 +11,14 @@
     <groupId>com.zty</groupId>
     <artifactId>hqx</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <!--<packaging>jar</packaging>-->
     <name>hqx</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
         <java.version>1.8</java.version>
+        <!--<thymeleaf.version>3.0.9.RELEASE</thymeleaf.version>-->
+        <!--<thymeleaf-layout-dialect-version>2.2.2</thymeleaf-layout-dialect-version>-->
     </properties>
 
     <dependencies>
@@ -62,22 +65,12 @@
             <artifactId>aspectjweaver</artifactId>
             <version>1.9.3</version>
         </dependency>
-        <!-- 添加starter-log4j2依赖 -->
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.boot</groupId>-->
-            <!--<artifactId>spring-boot-starter-log4j2</artifactId>-->
-        <!--</dependency>-->
-
         <!-- 添加redis依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
-        <!--redis连接池-->
-        <!--<dependency>-->
-            <!--<groupId>redis.clients</groupId>-->
-            <!--<artifactId>jedis</artifactId>-->
-        <!--</dependency>-->
+        <!-- 添加缓冲池 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
@@ -106,6 +99,16 @@
             <version>2.4</version>
             <classifier>jdk15</classifier>
         </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.8.3</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.ezmorph</groupId>
+            <artifactId>ezmorph</artifactId>
+            <version>1.0.6</version>
+        </dependency>
         <!--thulac分词器-->
         <dependency>
             <groupId>org.apdplat</groupId>
@@ -124,32 +127,17 @@
             <version>1.4.7</version>
         </dependency>
         <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-            <version>1.8.3</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
             <version>3.2.1</version>
         </dependency>
-        <dependency>
-            <groupId>net.sf.ezmorph</groupId>
-            <artifactId>ezmorph</artifactId>
-            <version>1.0.6</version>
-        </dependency>
+        <!--摘要运算、编码解码 eg：md5-->
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>1.10</version>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>

@@ -6,43 +6,31 @@ import com.zty.hqx.model.BaseModel;
 import com.zty.hqx.model.Result;
 import com.zty.hqx.service.BaseService;
 import com.zty.hqx.service.HistoryService;
+import com.zty.hqx.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.DecimalMin;
 import java.util.List;
 
 @Controller
 @Validated
-@CacheConfig(cacheNames = "hqx")
 public class BaseController {
     @Autowired
     BaseService baseService;
     @Autowired
     HistoryService historyService;
+    @Autowired
+    RedisUtil redisUtil;
 
     /**
      * 修改字段
      */
     @RequestMapping("/update/base")
     @ResponseBody
-    @Caching(evict = {
-            @CacheEvict(key = "'manage:base'"),
-            @CacheEvict(key = "'app:base:hot'"),
-            @CacheEvict(key = "'app:base:around'"),
-            @CacheEvict(key = "'app:base:num'"),
-            @CacheEvict(key="'app:base:content:id_'+#id"),
-            @CacheEvict(key = "'collect:base:null'"),
-            @CacheEvict(key = "'search:base:null'")
-    })
     public boolean updateBase(@DecimalMin("0") int id,
                               @RequestParam("title") String title,
                               @RequestParam("province") String province,
@@ -52,6 +40,10 @@ public class BaseController {
         BaseModel baseModel = new BaseModel(id, title, province, city, picUrl, htmlUrl);
         //更新数据
         baseService.updateBase(baseModel);
+        //删除缓存
+         redisUtil.remove("hqx:manage:base", "hqx:app:base:hot", "hqx:app:base:around",
+                "hqx:app:base:num", "hqx:app:base:content:id_" + id,
+                "hqx:collect:base:null", "hqx:search:base:null");
         return true;
     }
 
@@ -60,16 +52,13 @@ public class BaseController {
      */
     @RequestMapping("/delete/base")
     @ResponseBody
-    @Caching(evict = {
-            @CacheEvict(key = "'manage:base'"),
-            @CacheEvict(key = "'app:base'"),
-            @CacheEvict(key = "'collect:base:null'"),
-            @CacheEvict(key = "'search:base:null'")
-    })
     public void deleteBase(@RequestParam("list") List<Integer> list) {
         for (int id : list) {
             baseService.deleteBase(id);
         }
+        //删除缓存
+        redisUtil.remove("hqx:manage:base", "hqx:app:base",
+                "hqx:collect:base:null", "hqx:search:base:null");
     }
 
     /**
@@ -77,13 +66,6 @@ public class BaseController {
      */
     @RequestMapping("/upload/base")
     @ResponseBody
-    @Caching(evict = {
-            @CacheEvict(key = "'manage:base'"),
-            @CacheEvict(key = "'app:base:hot'"),
-            @CacheEvict(key = "'app:base:around'"),
-            @CacheEvict(key = "'app:base:num'"),
-            @CacheEvict(key = "'search:base:null'")
-    })
     public boolean upLoadBase(@RequestParam("title") String title,
                               @RequestParam("province") String province,
                               @RequestParam("city") String city,
@@ -92,6 +74,9 @@ public class BaseController {
         BaseModel baseModel = new BaseModel(0, title, province, city, picUrl, htmlUrl);
         //插入数据库
         baseService.insertBase(baseModel);
+        //删除缓存
+        redisUtil.remove("hqx:manage:base", "hqx:app:base:hot", "hqx:app:base:around",
+                "hqx:app:base:num", "hqx:search:base:null");
         return true;
     }
 
@@ -111,12 +96,31 @@ public class BaseController {
      * */
     @RequestMapping(value = "/base/content")
     @ResponseBody
-    @Cacheable(key="'app:base:content:id_'+#id")
     public Result<BaseModel> getBaseContent(int userId, int id) {
-        BaseModel model = baseService.getBaseById(userId, id);
-        historyService.insertHistory(userId, EModel.BASE.getType(), 0, id);
+        String redisKey = "hqx:app:base:content:id_" + id;
+        //更新count
         baseService.updateBaseCount(id);
-        return Result.success(model);
+        //插入历史记录
+        historyService.insertHistory(userId, EModel.BASE.getType(), 0, id);
+        //redis获取值
+        Result<BaseModel> rs = null;
+        try {
+            rs = (Result<BaseModel>) redisUtil.get(redisKey);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
+        BaseModel model = baseService.getBaseById(userId, id);
+        if(model == null){
+            rs = Result.error();
+        } else {
+            rs = Result.success(model);
+        }
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 
     /**
@@ -124,8 +128,19 @@ public class BaseController {
      * */
     @RequestMapping(value = "/manage/base")
     @ResponseBody
-    @Cacheable(key="'manage:base:page_'+#page + '_limit_' + #limit + '_key_' + #key")
-    public String getManageBase(int userId, int page, int limit, String key) {
+    public String getManageBase(int page, int limit, String key) {
+        String redisKey = "hqx:manage:base:page_" + page + "_limit_" + limit + "_key_" + key;
+        //redis获取值
+        String rs = null;
+        try {
+            rs = (String) redisUtil.get(redisKey);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
         List<BaseModel> list;// = baseService.getBase(page, limit);
         int num = (page - 1) * limit;
         if (key != null && !key.isEmpty()) {
@@ -140,7 +155,10 @@ public class BaseController {
         obj.put("msg", "");
         obj.put("count", baseService.getBaseCount());
         obj.put("data", list);
-        return obj.toJSONString();
+        rs = obj.toJSONString();
+        //存入数据库
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 
     /**
@@ -149,10 +167,19 @@ public class BaseController {
      */
     @RequestMapping(value = "/base")
     @ResponseBody
-    @Cacheable(key="'app:base:num:num_' + #num + '_limit_' + #limit")
     public Result<List<BaseModel>> getNumBase(int userId, int num, int limit) {
+        String redisKey = "hqx:app:base:num:num_" + num + "_limit_" + limit;
+        //redis获取值
+        Result<List<BaseModel>> rs = getRedisCache(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
         List<BaseModel> list = baseService.getBase(num, limit);
-        return Result.success(list);
+        rs = Result.success(list);
+        //存入数据库
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 
     /**
@@ -160,10 +187,19 @@ public class BaseController {
      */
     @RequestMapping(value = "/base/hot")
     @ResponseBody
-    @Cacheable(key="'app:base:hot:num_' + #num + '_limit_' + #limit")
-    public Result<List<BaseModel>> getHotBase(int userId, int num, int limit) {
-        List<BaseModel> list = baseService.getHotBase(num, limit);
-        return Result.success(list);
+    public Result<List<BaseModel>> getHotBase(int userId, int limit) {
+        String redisKey = "hqx:app:base:hot:limit_" + limit;
+        //redis获取值
+        Result<List<BaseModel>> rs = getRedisCache(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
+        List<BaseModel> list = baseService.getHotBase(limit);
+        rs = Result.success(list);
+        //存入数据库
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 
     /**
@@ -171,9 +207,29 @@ public class BaseController {
      */
     @RequestMapping(value = "/base/around")
     @ResponseBody
-    @Cacheable(key="'app:base:around:province_'+#province + '_city_' + #city + '_num_' + #num + '_limit_' + #limit")
-    public Result<List<BaseModel>> getAddressBase(int userId, String province, String city, int num, int limit) {
-        List<BaseModel> list = baseService.getBaseByAddress(province, city, num, limit);
-        return Result.success(list);
+    public Result<List<BaseModel>> getAddressBase(int userId, String province, String city, int limit) {
+        String redisKey = "hqx:app:base:around:province_" + province + "_city_" + city + "_limit_" + limit;
+        //redis获取值
+        Result<List<BaseModel>> rs = getRedisCache(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
+        List<BaseModel> list = baseService.getBaseByAddress(province, city, limit);
+        rs = Result.success(list);
+        //存入数据库
+        redisUtil.set(redisKey, rs);
+        return rs;
+    }
+
+    private Result<List<BaseModel>> getRedisCache(String redisKey){
+        //redis获取值
+        Result<List<BaseModel>> rs = null;
+        try {
+            rs = (Result<List<BaseModel>>) redisUtil.get(redisKey);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return rs;
     }
 }

@@ -1,11 +1,11 @@
 package com.zty.hqx.dao;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import com.zty.hqx.model.*;
+import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Result;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface CountDao {
@@ -16,36 +16,77 @@ public interface CountDao {
     @Insert("INSERT INTO count (model, part, label, id, time, count) VALUES (#{model}, #{part}, #{label}, #{id}, '${time}', #{count})")
     boolean insertCount(int model, int part, int label, int id, String time, int count);
 
-    //指定model、part和label的count
-    @Select("SELECT SUM(count) FROM count WHERE model = #{model} AND part = #{part} AND label = #{label} AND time BETWEEN '${time1}' AND '${time2}'")
-    int getLabelContrastCount(int model, int part, int label, String time1, String time2);
+    //指定study下某个part的一段时间内每个label的总浏览量
+    @Select("SELECT label, SUM(count) FROM count WHERE model = 1 AND part = #{part} AND time BETWEEN '${time1}' AND '${time2}' GROUP BY label")
+    @Results({
+            @Result(property = "time", column = "label"),
+            @Result(property = "count", column = "SUM(count)")
+    })
+    List<CountModel> getLabelContrastCount(int part, String time1, String time2);
 
-    //指定model、part和label的count
-    @Select("SELECT SUM(count) FROM count WHERE model = #{model} AND part = #{part} AND label = #{label} AND time = '${time}'")
-    int getLabelCountByTime(int model, int part, int label, String time);
+    //获取指定时间段内 study的某个part的某个label的总浏览量
+    @Select("SELECT time, SUM(count) FROM count WHERE model = #{model} AND part = #{part} AND label = #{label} AND time BETWEEN '${time1}' AND '${time2}' GROUP BY time")
+    @Results({
+            @Result(property = "count", column = "SUM(count)")
+    })
+    List<CountModel> getLabelCountByTime(int model, int part, int label, String time1, String time2);
 
-    @Select("SELECT SUM(count) FROM count WHERE model = #{model} AND part = #{part} AND time = '${time}'")
-    int getPartCountByTime(int model, int part, String time);
+    //获取指定时间段内 study的某个part的总浏览量
+    @Select("SELECT time, SUM(count) FROM count WHERE model = #{model} AND part = #{part} AND time BETWEEN '${time1}' AND '${time2}' GROUP BY time")
+    @Results({
+            @Result(property = "count", column = "SUM(count)")
+    })
+    List<CountModel> getPartCountByTime(int model, int part, String time1, String time2);
 
-    //获取指定时间某个model的总浏览量
-    @Select("SELECT SUM(count) FROM count WHERE model = #{model} AND time = '${time}'")
-    int getModelCountByTime(int model, String time);
+    //获取指定时间段内 base的总浏览量
+    @Select("SELECT time, SUM(count) FROM count WHERE model = 3 AND time BETWEEN '${time1}' AND '${time2}' GROUP BY time")
+    @Results({
+            @Result(property = "count", column = "SUM(count)")
+    })
+    List<CountModel> getBaseCountByTime(String time1, String time2);
 
-    @Select("SELECT ${part}.title FROM count, ${part} WHERE count.model = #{model} AND count.part = #{partNum} AND count.label = #{label} AND count.time BETWEEN '${time1}' AND '${time2}' AND count.id = ${part}.id ORDER BY count.count LIMIT 10")
-    List<String> getLabelTopChart(int model, String part, int partNum, int label, String time1, String time2);
+    //获取study中每个part的每个label的排行榜
+    @Select("SELECT ${part}.title FROM count, ${part} WHERE count.model = 1 AND count.part = #{partNum} AND count.label = #{label} AND count.time BETWEEN '${time1}' AND '${time2}' AND count.id = ${part}.id GROUP BY count.id ORDER BY SUM(count.count) DESC LIMIT 10")
+    List<String> getLabelTopChart(String part, int partNum, int label, String time1, String time2);
 
-    @Select("SELECT ${part}.title FROM count, ${part} WHERE count.model = #{model} AND count.part = #{partNum} AND count.label = #{label} AND count.time BETWEEN '${time1}' AND '${time2}' AND count.id = ${part}.id ORDER BY count.count DESC LIMIT 10")
-    List<String> getLabelBottomChart(int model, String part, int partNum, int label, String time1, String time2);
+    @Select("SELECT ${part}.title FROM count, ${part} WHERE count.model = 1 AND count.part = #{partNum} AND count.label = #{label} AND count.time BETWEEN '${time1}' AND '${time2}' AND count.id = ${part}.id GROUP BY count.id ORDER BY SUM(count.count) LIMIT 10")
+    List<String> getLabelBottomChart(String part, int partNum, int label, String time1, String time2);
 
-    @Select("SELECT ${part}.title FROM count, ${part} WHERE count.model = #{model} AND count.part = #{partNum} AND count.time BETWEEN '${time1}' AND '${time2}' AND count.id = ${part}.id ORDER BY count.count LIMIT 10")
-    List<String> getPartTopChart(int model, String part, int partNum, String time1, String time2);
+    //获取study中每个part的排行榜
+    @Select("SELECT ${part}.title FROM count, ${part} WHERE count.model = 1 AND count.part = #{partNum} AND count.time BETWEEN '${time1}' AND '${time2}' AND count.id = ${part}.id GROUP BY count.id ORDER BY SUM(count.count) DESC LIMIT 10")
+    List<String> getPartTopChart(String part, int partNum, String time1, String time2);
 
-    @Select("SELECT ${part}.title FROM count, ${part} WHERE count.model = #{model} AND count.part = #{partNum} AND count.time BETWEEN '${time1}' AND '${time2}' AND count.id = ${part}.id ORDER BY count.count DESC LIMIT 10")
-    List<String> getPartBottomChart(int model, String part, int partNum, String time1, String time2);
+    @Select("SELECT ${part}.title FROM count, ${part} WHERE count.model = 1 AND count.part = #{partNum} AND count.time BETWEEN '${time1}' AND '${time2}' AND count.id = ${part}.id GROUP BY count.id ORDER BY SUM(count.count) LIMIT 10")
+    List<String> getPartBottomChart(String part, int partNum, String time1, String time2);
 
-    @Select("SELECT ${model}.title FROM count, ${model} WHERE count.model = #{modelNum} AND count.time BETWEEN '${time1}' AND '${time2}' AND count.id = ${model}.id ORDER BY count.count LIMIT 10")
-    List<String> getModelTopChart(int modelNum, String model, String time1, String time2);
+    //获取基地的排行榜
+    @Select("SELECT base.title FROM count, base WHERE count.model = 3 AND count.time BETWEEN '${time1}' AND '${time2}' AND count.id = base.id GROUP BY count.id ORDER BY SUM(count.count) DESC LIMIT 10")
+    List<String> getBaseTopChart(String time1, String time2);
 
-    @Select("SELECT ${part}.title FROM count, ${part} WHERE count.model = #{model} AND count.time BETWEEN '${time1}' AND '${time2}' AND count.id = ${part}.id ORDER BY count.count DESC LIMIT 10")
-    List<String> getModelBottomChart(int model, String part, String time1, String time2);
+    @Select("SELECT base.title FROM count, base WHERE count.model = 3 AND count.time BETWEEN '${time1}' AND '${time2}' AND count.id = base.id GROUP BY count.id ORDER BY SUM(count.count) LIMIT 10")
+    List<String> getBaseBottomChart(String time1, String time2);
+
+    @Select("SELECT base.* FROM count, base WHERE count.model = 3 AND count.time = '${time}' AND count.id = base.id ORDER BY count.count LIMIT #{limit}")
+    @Results({
+            @Result(property = "picUrl", column = "pic"),
+            @Result(property = "htmlUrl", column = "html")
+    })
+    List<BaseModel> getBaseHot(String time, int limit);
+
+    @Select("SELECT book.* FROM count, book WHERE count.model = 1 AND count.part = 1 AND count.time = '${time}' AND count.id = book.id ORDER BY count.count LIMIT #{limit}")
+    @Results({@Result(property = "picUrl", column = "pic"),
+            @Result(property = "fileUrl", column = "file"),
+            @Result(property = "label.num", column = "num"),
+            @Result(property = "label.msg", column = "msg"),
+            @Result(property = "label.english", column = "english"),})
+    List<BookModel> getBookHot(String time, int limit);
+
+    @Select("SELECT ${part}.* FROM count, ${part} WHERE count.model = 1 AND count.part = #{partNum} AND count.time = '${time}' AND count.id = ${part}.id ORDER BY count.count LIMIT #{limit}")
+    @Results({
+            @Result(property = "picUrl", column = "pic"),
+            @Result(property = "label.num", column = "e_${part}.num"),
+            @Result(property = "label.msg", column = "msg"),
+            @Result(property = "label.english", column = "english")
+    })
+    List<VideoModel> getVideoHot(String part, int partNum, String time, int limit);
 }

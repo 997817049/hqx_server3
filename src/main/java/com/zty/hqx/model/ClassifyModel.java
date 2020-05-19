@@ -17,7 +17,6 @@ public class ClassifyModel implements Serializable {
     }
 
     public ClassifyModel(String msg, String english) {
-        this.num = num;
         this.msg = msg;
         this.english = english;
     }

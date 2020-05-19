@@ -1,12 +1,12 @@
 package com.zty.hqx.model;
 
-import com.zty.hqx.classify.CodeMsg;
+import com.zty.hqx.classify.ECodeMsg;
 
 import java.io.Serializable;
 
 public class Result<T> implements Serializable {
 
-    private int code;
+    private int code; //0成功
 
     private String msg;
 
@@ -21,7 +21,7 @@ public class Result<T> implements Serializable {
         this.data = data;
     }
 
-    public Result(CodeMsg codeMsg) {
+    public Result(ECodeMsg codeMsg) {
         if (codeMsg == null) {
             return;
         }
@@ -33,12 +33,12 @@ public class Result<T> implements Serializable {
         return new Result<>(0, "success", data);
     }
 
-    public static <T> Result<T> error(CodeMsg codeMsg) {
+    public static <T> Result<T> error(ECodeMsg codeMsg) {
         return new Result<>(codeMsg);
     }
 
     public static <T> Result<T> error() {
-        return new Result<>(CodeMsg.NO_ARTICLE_DATA);
+        return new Result<>(ECodeMsg.NO_DATA);
     }
 
     public int getCode() {

@@ -1,9 +1,11 @@
 package com.zty.hqx.controller;
 
+import com.zty.hqx.model.BaseModel;
 import com.zty.hqx.model.BookModel;
 import com.zty.hqx.model.Result;
 import com.zty.hqx.model.VideoModel;
 import com.zty.hqx.service.HistoryService;
+import com.zty.hqx.util.RedisUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +21,26 @@ import java.util.List;
  * 处理历史记录
  * */
 @Controller
-@CacheConfig(cacheNames = "hqx")
 public class HistoryController {
     @Autowired
     HistoryService historyService;
+    @Autowired
+    RedisUtil redisUtil;
 
     @RequestMapping(value = "/history/study/video")
     @ResponseBody
-    @Cacheable(key="'history:' + #part + ':' + #userId + ':num_' + #num + '_limit_'+ #limit")
     public Result<List<VideoModel>> getVideoHistory(int userId, String part, int num, int limit) {
+        String redisKey = "hqx:history:" + part + ":" + userId + ":num_" + num + "_limit_" + limit;
+        //redis获取值
+        Result<List<VideoModel>> rs = (Result<List<VideoModel>>) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
         List<VideoModel> list = historyService.getVideoHistory(userId, part, num, limit);
-        return Result.success(list);
+        rs = Result.success(list);
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 
     /**
@@ -42,9 +53,17 @@ public class HistoryController {
      * */
     @RequestMapping(value = "/history/study/book")
     @ResponseBody
-    @Cacheable(key="'history:book:userId_'+#userId")
     public Result<BookModel> getRecentRead(int userId, int limit) {
+        String redisKey = "hqx:history:book:userId_" + userId;
+        //redis获取值
+        Result<BookModel> rs = (Result<BookModel>) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
         BookModel bookModel = historyService.getBookHistory(userId, 0, limit);
-        return Result.success(bookModel);
+        rs = Result.success(bookModel);
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 }

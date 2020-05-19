@@ -1,7 +1,7 @@
 package com.zty.hqx.dao;
 
+import com.zty.hqx.model.ExamContentModel;
 import com.zty.hqx.model.ExamModel;
-import com.zty.hqx.model.QuestionModel;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -16,8 +16,8 @@ public interface StudyExamDao {
 //  ---------------------------------------增数据-----------------------------------------------
 
     @Insert("INSERT INTO exam_content (id, num, type, question, optionA, optionB, optionC, optionD, answer, analysis, create_time) " +
-            "VALUES (#{examId}, #{model.num}, #{model.type.type}, '${model.question}', '${model.optionA}', '${model.optionB}' , '${model.optionC}',  '${model.optionD}',  '${model.answer}', '${model.analysis}', now())")
-    void insertExamContent(int examId, QuestionModel model);
+            "VALUES (#{examId}, #{model.num}, #{model.type.num}, '${model.question}', '${model.optionA}', '${model.optionB}' , '${model.optionC}',  '${model.optionD}',  '${model.answer}', '${model.analysis}', now())")
+    void insertExamContent(int examId, ExamContentModel model);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert("INSERT INTO exam (title, label, time, create_time) VALUES ('${title}', #{label.num}, #{time}, now())")
@@ -43,8 +43,8 @@ public interface StudyExamDao {
     @Update("update exam set count=count+1 where id = #{id}")
     void updateExamCount(int id);
 
-    @Update("UPDATE exam_content SET type = #{model.type.type}, question = '${model.question}', optionA = '${model.optionA}',optionB = '${model.optionB}',optionC = '${model.optionC}',optionD = '${model.optionD}', answer = '${model.answer}', analysis = '${model.analysis}' WHERE id = #{id} and num = #{model.num}")
-    void updateExamContent(int id, QuestionModel model);
+    @Update("UPDATE exam_content SET type = #{model.type.num}, question = '${model.question}', optionA = '${model.optionA}',optionB = '${model.optionB}',optionC = '${model.optionC}',optionD = '${model.optionD}', answer = '${model.answer}', analysis = '${model.analysis}' WHERE id = #{id} and exam_content.num = #{model.num}")
+    void updateExamContent(int id, ExamContentModel model);
 
 //---------------------------------------获取数据---------------------------------------------------
 
@@ -79,7 +79,7 @@ public interface StudyExamDao {
             @Result(property = "label.english", column = "english"),})
     List<ExamModel> getExamByNum(int num, int limit);
 
-    @Select("SELECT id, label, count, e_exam.* FROM exam, e_exam")
+    @Select("SELECT id, label, count, e_exam.* FROM exam, e_exam WHERE e_exam.num = exam.label")
     @Results({@Result(property = "label.num", column = "num"),
             @Result(property = "label.msg", column = "msg"),
             @Result(property = "label.english", column = "english"),})
@@ -91,11 +91,21 @@ public interface StudyExamDao {
             @Result(property = "label.english", column = "english"),})
     ExamModel getExamById(int id);
 
-    @Select("SELECT * FROM exam_content WHERE id = #{id}")
-    List<QuestionModel> getExamContent(int id);
+    @Select("SELECT id, exam_content.num, type, question, optionA, optionB, optionC, optionD, answer, analysis, e_exam_content.num as num1, msg" +
+            " FROM exam_content, e_exam_content WHERE id = #{id} and e_exam_content.num = exam_content.type")
+    @Results({
+            @Result(property = "type.num", column = "num1"),
+            @Result(property = "type.msg", column = "msg")
+    })
+    List<ExamContentModel> getExamContent(int id);
 
-    @Select("SELECT * FROM exam_content WHERE id = #{id} and num = #{num}")
-    QuestionModel getQuestion(int id, int num);
+    @Select("SELECT id, exam_content.num, type, question, optionA, optionB, optionC, optionD, answer, analysis, e_exam_content.num as num1, msg" +
+            " FROM exam_content, e_exam_content WHERE id = #{id} and exam_content.num = #{num} and e_exam_content.num = exam_content.type")
+    @Results({
+            @Result(property = "type.num", column = "num1"),
+            @Result(property = "type.msg", column = "msg")
+    })
+    ExamContentModel getQuestion(int id, int num);
 
     @Select("select count(1) from exam")
     int getExamCount();

@@ -3,7 +3,11 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.PoolException;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,6 +21,8 @@ public class RedisUtil {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     /**
      * 写入缓存
      */
@@ -27,7 +33,7 @@ public class RedisUtil {
             operations.set(key, value);
             result = true;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("redis操作失败");
         }
         return result;
     }
@@ -72,7 +78,11 @@ public class RedisUtil {
      */
     public void remove(final String key) {
         if (exists(key)) {
-            redisTemplate.delete(key);
+            try {
+                redisTemplate.delete(key);
+            }  catch (Exception e) {
+                logger.warn("redis操作失败");
+            }
         }
     }
 
@@ -80,7 +90,12 @@ public class RedisUtil {
      * 判断缓存中是否有对应的value
      */
     public boolean exists(final String key) {
-        return redisTemplate.hasKey(key);
+        try {
+            return redisTemplate.hasKey(key);
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
@@ -88,8 +103,12 @@ public class RedisUtil {
      */
     public Object get(final String key) {
         Object result = null;
-        ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
-        result = operations.get(key);
+        try {
+            ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
+            result = operations.get(key);
+        } catch (Exception e){
+            logger.warn("redis操作失败");
+        }
         return result;
     }
 

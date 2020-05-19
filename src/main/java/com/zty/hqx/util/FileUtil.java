@@ -16,8 +16,8 @@ public class FileUtil {
     @Value("${hqx.staticUrl}")
     private String staticUrl;
 
-    @Value("${hqx.absoluteStaticUrl}")
-    private static String rootPath;
+//    @Value("${hqx.absoluteStaticUrl}")
+    private static final String rootPath = "/funyoo_project/hqx_app/hqx_static/";
 
     public static void writeVideo(FileModel fileModel) throws IOException {
         File file = new File(rootPath + fileModel.getPath());
@@ -106,6 +106,7 @@ public class FileUtil {
         //exists 文件或文件夹
         //isFile() 存在&只能是文件
         if(!file.isFile()){
+            System.out.println("文件不存在:" + file);
             return false;
         }
         return file.delete();// 删除

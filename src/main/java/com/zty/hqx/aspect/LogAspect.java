@@ -5,15 +5,12 @@ import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.core.DefaultParameterNameDiscoverer;
-import org.springframework.core.ParameterNameDiscoverer;
+
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 
 /**
  * 日志
@@ -24,16 +21,9 @@ import java.util.Arrays;
 @Aspect
 @Component
 public class LogAspect {
-
-    ThreadLocal<Long> startTime = new ThreadLocal<>();
+    private ThreadLocal<Long> startTime = new ThreadLocal<>();
 
     private Logger logger = LogManager.getLogger(LogAspect.class);
-
-    //com.kzj.kzj_rabbitmq.controller 包中所有的类的所有方法切面
-    //@Pointcut("execution(public * com.kzj.kzj_rabbitmq.controller.*.*(..))")
-
-    //只针对 MessageController 类切面
-    //@Pointcut("execution(public * com.kzj.kzj_rabbitmq.controller.MessageController.*(..))")
 
     //统一切点,对com.funyoo.hqxApp.controller及其子包中所有的类的所有方法切面
     @Pointcut("execution(public * com.zty.hqx.controller..*.*(..))")
@@ -76,29 +66,5 @@ public class LogAspect {
         logger.error(e.getMessage());
         logger.error(e.getLocalizedMessage());
     }
-
-    //@Around：环绕通知 环绕位于前置拦截前和后置返回前执行
-//    @Around("Pointcut()")
-//    public Object Around(ProceedingJoinPoint pjp) throws Throwable {
-//        System.out.println("开始环绕");
-//        long startTime = System.currentTimeMillis();
-//
-//        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-//        HttpServletRequest request = attributes.getRequest();
-//        String ip = request.getRemoteAddr();
-//        String url = request.getRequestURL().toString();
-//        String type = request.getMethod();
-//        String method = pjp.getSignature().getDeclaringTypeName() + "." + pjp.getSignature().getName();
-//        String paras = Arrays.toString(pjp.getArgs());
-//
-//        Object object = pjp.proceed();
-//
-//        String result = object.toString();
-//        long time = System.currentTimeMillis() - startTime;
-//        logger.info("[" + ip + "] [" + url + "] [" + type + "] [" + method + "] " + paras + " [" + result + "]");
-//
-//        System.out.println("环绕结束");
-//        return object;
-//    }
 
 }

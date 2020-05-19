@@ -22,7 +22,12 @@ public class HistoryService {
      * 插入历史记录
      * */
     public void insertHistory(int userId, int modelId, int partId, int id) {
-        historyDao.insertHistory(userId, modelId, partId, id);
+        String time = historyDao.getOneHistory(userId, modelId, partId, id);
+        if(time == null){
+            historyDao.insertHistory(userId, modelId, partId, id);
+        } else {
+            historyDao.updateHistory(userId, modelId, partId, id);
+        }
     }
 
     public List<VideoModel> getVideoHistory(int userId, String part, int num, int limit){
@@ -41,16 +46,6 @@ public class HistoryService {
         if(list == null || list.size() < 1) return null;
         return studyService.getBook(userId, list.get(0));
     }
-
-//    public List<BaseModel> getBaseHistory(int userId, int num, int limit) {
-//        List<Integer> list = historyDao.getHistory(userId, EModel.BASE.getType(), 0, num, limit);
-//        if(list == null || list.size() < 1) return null;
-//        List<BaseModel> rsList = new ArrayList<>();
-//        for(int id : list) {
-//            rsList.add(baseService.getBaseById(userId, id));
-//        }
-//        return rsList;
-//    }
 
     public List<VideoModel> getVideoHistoryByTime(int userId, String part, String time){
         EStudyPart epart = EStudyPart.getEnumFromString(part.toUpperCase());

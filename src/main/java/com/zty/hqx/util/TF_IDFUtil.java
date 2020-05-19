@@ -57,7 +57,12 @@ public class TF_IDFUtil {
         return TFMap;
     }
 
-    //计算idf
+    /**
+     * 计算idf
+     *
+     * @param allWordSet 分词的结果（set 不重复， 分词的全部词汇）
+     * @param docList 输入的全部标题 认为是每一个标题一篇文档
+     * */
     private static HashMap<String, Double> calIDF(Set<String> allWordSet, List<String> docList){
         double docCount = docList.size();
         HashMap<String, Double> IDFMap = new HashMap<>();

@@ -44,80 +44,52 @@ public interface StudyVideoDao {
     void updateVideoCount(String part, int id);
 
     @Update("UPDATE ${part}_video SET num = #{newNum}, video = '${videoUrl}' WHERE id = #{id} and num = #{oldNum}")
-    void updateVideoContentNum(String part, int id, int oldNum, int newNum, String videoUrl);
+    void updateVideoContent(String part, int id, int oldNum, int newNum, String videoUrl);
 
 // ------------------------------------获取数据--------------------------------------------------------
 
-    @Select("SELECT * FROM ${part}, e_${part} WHERE e_${part}.num = ${part}.label ORDER BY count DESC LIMIT #{limit}")
-    @Results({
+    @Select("SELECT ${part}.*, e_${part}.num as num1, e_${part}.msg, e_${part}.english " +
+            "FROM ${part}, e_${part} WHERE e_${part}.num = ${part}.label ORDER BY count DESC LIMIT #{limit}")
+    @Results(id = "VideoMap", value = {
             @Result(property = "picUrl", column = "pic"),
-            @Result(property = "label.num", column = "e_${part}.num"),
+            @Result(property = "label.num", column = "num1"),
             @Result(property = "label.msg", column = "msg"),
             @Result(property = "label.english", column = "english")
     })
     List<VideoModel> getVideoByCount(String part, int limit);
 
-    @Select("SELECT * FROM ${part}, e_${part} WHERE e_${part}.num = ${part}.label ORDER BY ${part}.create_time DESC LIMIT #{limit}")
-    @Results({
-            @Result(property = "picUrl", column = "pic"),
-            @Result(property = "label.num", column = "e_${part}.num"),
-            @Result(property = "label.msg", column = "msg"),
-            @Result(property = "label.english", column = "english")
-    })
+    @Select("SELECT ${part}.*, e_${part}.num as num1, e_${part}.msg, e_${part}.english " +
+            "FROM ${part}, e_${part} WHERE e_${part}.num = ${part}.label ORDER BY ${part}.create_time DESC LIMIT #{limit}")
+    @ResultMap(value = "VideoMap")
     List<VideoModel> getVideoByTime(String part, int limit);
 
-    @Select("SELECT * FROM ${part}, e_${part} WHERE label = #{label} and e_${part}.num = ${part}.label and id > #{num} ORDER BY id LIMIT #{limit}")
-    @Results({
-            @Result(property = "picUrl", column = "pic"),
-            @Result(property = "label.num", column = "e_${part}.num"),
-            @Result(property = "label.msg", column = "msg"),
-            @Result(property = "label.english", column = "english")
-    })
+    @Select("SELECT ${part}.*, e_${part}.num as num1, e_${part}.msg, e_${part}.english " +
+            "FROM ${part}, e_${part} WHERE label = #{label} and e_${part}.num = ${part}.label and id > #{num} ORDER BY id LIMIT #{limit}")
+    @ResultMap(value = "VideoMap")
     List<VideoModel> getVideoByLabel(String part, int num, int limit, int label);
 
-    @Select("SELECT * FROM ${part}, e_${part} WHERE e_${part}.num = ${part}.label and title LIKE '%${key}%' and id > #{num} ORDER BY id LIMIT #{limit}")
-    @Results({
-            @Result(property = "picUrl", column = "pic"),
-            @Result(property = "label.num", column = "e_${part}.num"),
-            @Result(property = "label.msg", column = "msg"),
-            @Result(property = "label.english", column = "english")
-    })
+    @Select("SELECT ${part}.*, e_${part}.num as num1, e_${part}.msg, e_${part}.english " +
+            "FROM ${part}, e_${part} WHERE e_${part}.num = ${part}.label and title LIKE '%${key}%' and id > #{num} ORDER BY id LIMIT #{limit}")
+    @ResultMap(value = "VideoMap")
     List<VideoModel> getVideoByTitle(String part, String key, int num, int limit);
 
-    @Select("SELECT * FROM ${part}, e_${part} WHERE e_${part}.num = ${part}.label and title LIKE '%${key}%' ORDER BY id")
-    @Results({
-            @Result(property = "picUrl", column = "pic"),
-            @Result(property = "label.num", column = "e_${part}.num"),
-            @Result(property = "label.msg", column = "msg"),
-            @Result(property = "label.english", column = "english")
-    })
+    @Select("SELECT ${part}.*, e_${part}.num as num1, e_${part}.msg, e_${part}.english  " +
+            "FROM ${part}, e_${part} WHERE e_${part}.num = ${part}.label and title LIKE '%${key}%' ORDER BY id")
+    @ResultMap(value = "VideoMap")
     List<VideoModel> getVideoByKey(String part, String key);
 
-    @Select("SELECT * FROM ${part}, e_${part} WHERE e_${part}.num = ${part}.label and id > #{num} ORDER BY id LIMIT #{limit}")
-    @Results({
-            @Result(property = "picUrl", column = "pic"),
-            @Result(property = "label.num", column = "e_${part}.num"),
-            @Result(property = "label.msg", column = "msg"),
-            @Result(property = "label.english", column = "english")
-    })
+    @Select("SELECT ${part}.*, e_${part}.num as num1, e_${part}.msg, e_${part}.english " +
+            "FROM ${part}, e_${part} WHERE e_${part}.num = ${part}.label and id > #{num} ORDER BY id LIMIT #{limit}")
+    @ResultMap(value = "VideoMap")
     List<VideoModel> getVideoById(String part, int num, int limit);
 
     @Select("SELECT id, label, count, e_${part}.* FROM ${part}, e_${part} where e_${part}.num = ${part}.label")
-    @Results({
-            @Result(property = "picUrl", column = "pic"),
-            @Result(property = "label.num", column = "e_${part}.num"),
-            @Result(property = "label.msg", column = "msg"),
-            @Result(property = "label.english", column = "english")
-    })
+    @ResultMap(value = "VideoMap")
     List<VideoModel> getAllVideoCount(String part);
 
-    @Select("SELECT * FROM ${part}, e_${part} WHERE id = #{id} and e_${part}.num = ${part}.label")
-    @Results({
-            @Result(property = "picUrl", column = "pic"),
-            @Result(property = "label.num", column = "e_${part}.num"),
-            @Result(property = "label.msg", column = "msg"),
-            @Result(property = "label.english", column = "english")
-    })
+    @Select("SELECT ${part}.*, e_${part}.num as num1, e_${part}.msg, e_${part}.english " +
+            "FROM ${part}, e_${part} WHERE id = #{id} and e_${part}.num = ${part}.label")
+    @ResultMap(value = "VideoMap")
     VideoModel getVideo(@Param("part") String part, @Param("id") int id);
 
     @Select("SELECT * FROM ${part}_video WHERE id = #{id} ORDER BY num")
@@ -130,7 +102,7 @@ public interface StudyVideoDao {
     @Results({
             @Result(property = "videoUrl", column = "video")
     })
-    VideoContentModel getVideoContent2(String part, int id, int num);
+    VideoContentModel getVideoContentByNum(String part, int id, int num);
 
     @Select("select count(1) from ${part}")
     int getVideoCount(String part);

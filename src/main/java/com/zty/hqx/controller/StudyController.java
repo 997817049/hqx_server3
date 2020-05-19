@@ -2,18 +2,15 @@ package com.zty.hqx.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.zty.hqx.annotation.IsStudyPart;
-import com.zty.hqx.annotation.IsVideoPart;
+import com.zty.hqx.validator.IsStudyPart;
+import com.zty.hqx.validator.IsVideoPart;
 import com.zty.hqx.classify.*;
 import com.zty.hqx.model.*;
 import com.zty.hqx.service.*;
 import com.zty.hqx.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,7 +23,6 @@ import java.util.List;
 
 @Controller
 @Validated
-@CacheConfig(cacheNames = "hqx")
 public class StudyController {
     @Autowired
     StudyService studyService;
@@ -38,6 +34,49 @@ public class StudyController {
     ResourceService resourceService;
     @Autowired
     RedisUtil redisUtil;
+
+//=======================================页面切换===================================================
+
+    @RequestMapping("/study/add")
+    public String addExam(String part){
+        if(part.equals("exam")) return "study/add_exam";
+        if(part.equals("book")) return "study/add_book";
+        return "study/add_video";
+    }
+
+    @RequestMapping("/study/label")
+    public String addLabel(){
+        return "study/add_label";
+    }
+
+    @RequestMapping("/study/exam_content/adm")
+    public String admExamContent(int id, Model model){
+        model.addAttribute("id", id);
+        return "study/adm_exam_content.html";
+    }
+
+    @RequestMapping("/study/adm")
+    public String admStudy(String part){
+        return "study/adm_" + part + ".html";
+    }
+
+    @RequestMapping("/study/video_content/adm")
+    public String admVideoContent(String part, int id, Model model){
+        model.addAttribute("part", part);
+        VideoModel video = studyService.manageGetVideo(part, id);
+        model.addAttribute("model", video);
+        return "study/adm_video_content";
+    }
+
+//==================================================================================================
+
+    @RequestMapping("/study/statistics")
+    public String statisticsStudy(String part, Model model){
+        model.addAttribute("part", part);
+        List<ClassifyModel> classifyList = classifyService.getClassify(part);
+        model.addAttribute("classify", classifyList);
+        return "study/statistics_study";
+    }
 
     //判断名字是否能用
     @RequestMapping("/test/video")
@@ -63,26 +102,34 @@ public class StudyController {
     //获取分类
     @RequestMapping(value = "/classify/study")
     @ResponseBody
-    @Cacheable(key="'classify:study:' + #part")
     public Result<List<ClassifyModel>> getClassify(@IsStudyPart String part){
+        //redis获取值
+        String redisKey = "hqx:classify:study:" + part;
+        Result<List<ClassifyModel>> rs = (Result<List<ClassifyModel>>) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
         List<ClassifyModel> list = classifyService.getClassify(part);
-        return Result.success(list);
+        rs = Result.success(list);
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 
     @RequestMapping(value = "/add/study/label")
     @ResponseBody
-    @CacheEvict(key="'classify:study:' + #part")
     public Result<ClassifyModel> addLabel(@IsStudyPart String part, String msg, String english){
         ClassifyModel model = new ClassifyModel(msg, english);
         classifyService.insertClassify(part, model);
+        redisUtil.remove("hqx:classify:study:" + part);
         return Result.success(model);
     }
 
     @RequestMapping(value = "/delete/study/label")
     @ResponseBody
-    @CacheEvict(key="'classify:study:' + #part")
     public Result<Boolean> deleteLabel(@IsStudyPart String part, int num){
         boolean rs = classifyService.deleteClassify(part, num);
+        redisUtil.remove("hqx:classify:study:" + part);
         return Result.success(rs);
     }
 
@@ -90,31 +137,17 @@ public class StudyController {
 
     @RequestMapping("/update/study/exam")
     @ResponseBody
-    @Caching(evict = {
-            @CacheEvict(key = "'manage:study:exam'"),
-            @CacheEvict(key = "'app:study:exam:recent'"),
-            @CacheEvict(key = "'app:study:exam:special'"),
-            @CacheEvict(key = "'app:study:exam:info:id_' + #id"),
-            @CacheEvict(key = "'collect:study:exam'"),
-            @CacheEvict(key = "'search:study:exam'"),
-    })
     public void updateExam(int id, String title, int label, int time) {
         ExamModel model = new ExamModel(id, title, new ClassifyModel(label), time);
         studyService.updateExam(model);
+        redisUtil.remove("hqx:manage:study:exam",
+                "hqx:app:study:exam:recent", "hqx:app:study:exam:special",
+                "hqx:app:study:exam:info:id_" + id,
+                "hqx:collect:study:exam", "hqx:search:study:exam");
     }
 
     @RequestMapping("/update/study/book")
     @ResponseBody
-    @Caching(evict = {
-            @CacheEvict(key = "'manage:study:book'"),
-            @CacheEvict(key = "'app:study:book:hot'"),
-            @CacheEvict(key = "'app:study:book:recent'"),
-            @CacheEvict(key = "'app:study:book:special'"),
-            @CacheEvict(key = "'app:study:book:info:id_' + #id"),
-            @CacheEvict(key = "'collect:study:book'"),
-            @CacheEvict(key = "'search:study:book'"),
-            @CacheEvict(key = "'history:book'")
-    })
     public void updateBook(int id,
                            @NotBlank(message = "title不能为空")
                            @RequestParam("title") String title,
@@ -127,20 +160,14 @@ public class StudyController {
                            @RequestParam("file") String file){
         BookModel model = new BookModel(id, title, new ClassifyModel(label), author, synopsis, pic, file);
         studyService.updateBook(model);
+        redisUtil.remove("hqx:manage:study:book",
+                "hqx:app:study:book:hot","hqx:app:study:book:recent",
+                "hqx:app:study:book:special","hqx:app:study:book:info:id_" + id,
+                "hqx:collect:study:book", "hqx:search:study:book", "hqx:history:book");
     }
 
     @RequestMapping("/update/study/video")
     @ResponseBody
-    @Caching(evict = {
-            @CacheEvict(key = "'manage:study:' + #part"),
-            @CacheEvict(key = "'app:study:' + #part + ':hot'"),
-            @CacheEvict(key = "'app:study:' + #part + ':recent'"),
-            @CacheEvict(key = "'app:study:' + #part + ':special'"),
-            @CacheEvict(key = "'app:study:' + #part + ':info:id_' + #id"),
-            @CacheEvict(key = "'collect:study:' + #part"),
-            @CacheEvict(key = "'search:study:' + #part"),
-            @CacheEvict(key = "'history:' + #part")
-    })
     public void updateVideo(@IsVideoPart String part, int id,
                             @NotBlank(message = "title不能为空")
                             @RequestParam("title") String title,
@@ -153,66 +180,62 @@ public class StudyController {
                             @RequestParam("pic") String pic){
         VideoModel model = new VideoModel(id, title, new ClassifyModel(label), actor, num, synopsis, pic);
         studyService.updateVideo(part, model);
+        redisUtil.remove("hqx:manage:study:" + part,
+                "hqx:app:study:" + part + ":hot","hqx:app:study:" + part + ":recent",
+                "hqx:app:study:" + part + ":special","hqx:app:study:" + part + ":info:id_" + id,
+                "hqx:collect:study:" + part, "hqx:search:study:" + part, "hqx:history" + part);
     }
 
     @RequestMapping("/update/study/exam/content")
     @ResponseBody
-    @CacheEvict(key="'app:study:exam:content:id_' + #id")
     public void updateExamContent(@DecimalMin("0") int id,
                                   @DecimalMin("0") int num,
-                                  int type,
-                                  String question,
-                                  String answer,
-                                  String analysis,
-                                  String optionA,
-                                  String optionB,
-                                  String optionC,
-                                  String optionD) {
-        QuestionModel model = new QuestionModel(num, type, question, answer, analysis, optionA, optionB, optionC, optionD);
+                                  @RequestParam("type") int type,
+                                  @RequestParam("question") String question,
+                                  @RequestParam("answer") String answer,
+                                  @RequestParam("analysis") String analysis,
+                                  @RequestParam("optionA") String optionA,
+                                  @RequestParam("optionB") String optionB,
+                                  @RequestParam("optionC") String optionC,
+                                  @RequestParam("optionD") String optionD) {
+        ExamContentModel model = new ExamContentModel(num, new ClassifyModel(type), question, answer, analysis, optionA, optionB, optionC, optionD);
         studyService.updateExamContent(id, model);
+        redisUtil.remove("hqx:app:study:exam:content:id_" + id);
     }
 
     @RequestMapping("/update/study/video/content")
     @ResponseBody
-    @Caching(evict = {
-            @CacheEvict(key="'app:study:' + #part + ':content:id_' + #id"),
-    })
     public void updateTvVideo(@IsVideoPart String part, int id, int oldNum, int newNum, @NotBlank String videoUrl) {
-        studyService.updateVideoContentNum(part, id, oldNum, newNum, videoUrl);
+        studyService.updateVideoContent(part, id, oldNum, newNum, videoUrl);
+        redisUtil.remove("hqx:app:study:" + part + ":content:id_" + id);
     }
 
 // <-------------------------------------控制端删除资源----------------------------------------->
 
     @RequestMapping("/delete/study/exam")
     @ResponseBody
-    @CacheEvict(key="'app:study:exam:content:id_' + #id")
-    public void deleteExamContent(int id,
+    public Result<Boolean> deleteExamContent(int id,
                                   @NotNull @RequestParam("list") String list) {
         List<Integer> list1 = JSONArray.parseArray(list, Integer.class);
         studyService.deleteExamContent(id, list1);
+        redisUtil.remove("hqx:app:study:exam:content:id_" + id);
+        return Result.success(true);
     }
 
     @RequestMapping("/delete/study/video")
     @ResponseBody
-    @CacheEvict(key="'app:study:' + #part + ':content:id_' + #id")
     public void deleteVideoContent(@IsVideoPart String part, int id,
                                    @NotNull @RequestParam("list") String listStr) {
         List<Integer> list = JSONArray.parseArray(listStr, Integer.class);
         for (int num : list){
             studyService.deleteVideoContent(part, id, num);
         }
+        redisUtil.remove("hqx:app:study:" + part + ":content:id_" + id);
     }
 
     @RequestMapping("/delete/study")
     @ResponseBody
-    @Caching(evict = {
-            @CacheEvict(key = "'manage:study:' + #part"),
-            @CacheEvict(key = "'app:study:' + #part"),
-            @CacheEvict(key = "'collect:study:' + #part"),
-            @CacheEvict(key = "'search:study:' + #part"),
-            @CacheEvict(key = "'history'", condition = "!{#part eq 'exam'}")
-    })
-    public void delete(@IsStudyPart @RequestParam("part") String part,
+    public boolean delete(@IsStudyPart @RequestParam("part") String part,
                        @NotNull @RequestParam("list") String listStr) {
         EStudyPart epart = EStudyPart.getEnumFromString(part.toUpperCase());
         List<Integer> list = JSONArray.parseArray(listStr, Integer.class);
@@ -236,6 +259,14 @@ public class StudyController {
                 break;
             }
         }
+        redisUtil.remove("hqx:manage:study:" + part,
+                "hqx:app:study:" + part,"hqx:collect:study:" + part,
+                "hqx:search:study:" + part);
+        //exam没有历史记录
+        if(!part.equals("exam")){
+            redisUtil.remove("hqx:history" + part);
+        }
+        return true;
     }
 
     /**
@@ -243,8 +274,14 @@ public class StudyController {
      */
     @RequestMapping(value = "/manage/study")
     @ResponseBody
-    @Cacheable(key="'manage:study:' + #part + ':page_'+ #page + '_limit_' + #limit + '_key_' + #key")
     public String manageGetParts(int userId, @IsStudyPart String part, int page, int limit, String key) {
+        //redis获取值
+        String redisKey = "hqx:manage:study:" + part + ":page_" + page + "_limit_" + limit + "_key_" + key;
+        String rs = (String) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
         EStudyPart epart = EStudyPart.getEnumFromString(part.toUpperCase());
         int num = (page - 1) * limit;
         List list;
@@ -272,38 +309,40 @@ public class StudyController {
         obj.put("msg", "");
         obj.put("count", studyService.getPartsCount(epart));
         obj.put("data", list);
-        return obj.toJSONString();
+        rs = obj.toJSONString();
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 
 // <----------------------------------------控制端 上传资源------------------------------------------------>
 
+    /**
+     * @param title 试卷标题
+     * @param label 试卷标签
+     * @param time 考试时间
+     * @param question 试卷内容 list-》jsonStr
+     * */
     @RequestMapping("/upload/study/exam")
     @ResponseBody
-    @Caching(evict = {
-            @CacheEvict(key = "'manage:study:exam'"),
-            @CacheEvict(key = "'app:study:exam:recent'"),
-            @CacheEvict(key = "'app:study:exam:special:' + #label"),
-            @CacheEvict(key = "'search:study:exam'")
-    })
     public void uploadExam(@RequestParam("title") String title,
                            @RequestParam("label") int label,
                            @RequestParam("time") int time,
                            @RequestParam("question") String question) {
-        List<QuestionModel> list = JSONArray.parseArray(question, QuestionModel.class);
+        System.out.println(question);
+//        List<ExamContentModel> list = (List<ExamContentModel>) JSONObject.parse(question);
+        System.out.println(JSONArray.parseArray(question, ExamContentModel.class));
+        List<ExamContentModel> list = JSONArray.parseArray(question, ExamContentModel.class);
+        System.out.println(list);
         ExamModel model = new ExamModel(title, new ClassifyModel(label), time);
         studyService.insertExam(model);
         studyService.insertExamContent(model.getId(), list);
+        redisUtil.remove("hqx:manage:study:exam",
+                "hqx:app:study:exam:special:" + label, "hqx:app:study:exam:recent",
+                "hqx:search:study:exam");
     }
 
     @RequestMapping("/upload/study/book")
     @ResponseBody
-    @Caching(evict = {
-            @CacheEvict(key = "'manage:study:book'"),
-            @CacheEvict(key = "'app:study:book:hot'"),
-            @CacheEvict(key = "'app:study:book:recent'"),
-            @CacheEvict(key = "'app:study:book:special:' + #label"),
-            @CacheEvict(key = "'search:study:book'")
-    })
     public void uploadBook(@NotBlank(message = "title不能为空")
                            @RequestParam("title") String title,
                            int label,
@@ -315,17 +354,13 @@ public class StudyController {
                            @RequestParam("file") String file){
         BookModel model = new BookModel(title, new ClassifyModel(label), author, synopsis, pic, file);
         studyService.insertBook(model);
+        redisUtil.remove("hqx:manage:study:book",
+                "hqx:app:study:book:hot", "hqx:app:study:book:special:" + label,
+                "hqx:app:study:book:recent", "hqx:search:study:book");
     }
 
     @RequestMapping("/upload/study/video")
     @ResponseBody
-    @Caching(evict = {
-            @CacheEvict(key = "'manage:study:' + #part"),
-            @CacheEvict(key = "'app:study:' + #part + ':hot'"),
-            @CacheEvict(key = "'app:study:' + #part + ':special:' + #label"),
-            @CacheEvict(key = "'app:study:' + #part + ':recent'"),
-            @CacheEvict(key = "'search:study:' + #part")
-    })
     public void uploadVideo(@IsVideoPart String part,
                             @NotBlank(message = "title不能为空")
                             @RequestParam("title") String title,
@@ -341,35 +376,71 @@ public class StudyController {
         VideoModel model = new VideoModel(title, new ClassifyModel(label), actor, num, synopsis, pic);
         studyService.insertVideo(part, model);
         studyService.insertVideoContent(part, model.getId(), videoList);
+        redisUtil.remove("hqx:manage:study:" + part,
+                "hqx:app:study:" + part + ":hot", "hqx:app:study:" + part + ":special:" + label,
+                "hqx:app:study:" + part + ":recent", "hqx:search:study:" + part);
     }
 
 // <--------------------------------------获取试卷------------------------------------------>
 
     @RequestMapping(value = "/study/exam/graduate")
     @ResponseBody
-    @Cacheable(key="'app:study:exam:special:1:num_'+ #num + '_limit_' + #limit")
     public Result<List<ExamModel>> getGraduateExam(int userId, int num, int limit) {
+        //redis获取值
+        String redisKey = "hqx:app:study:exam:special:1:num_" + num + "_limit_" + limit;
+        Result<List<ExamModel>> rs = (Result<List<ExamModel>>) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
         List<ExamModel> list = studyService.getExamByLabel(userId, num, limit, 0);
-        if(list == null) return Result.error();
-        return Result.success(list);
+        if(list == null) {
+            rs = Result.error();
+        } else {
+            rs = Result.success(list);
+        }
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 
     @RequestMapping(value = "/study/exam/recent")
     @ResponseBody
-    @Cacheable(key="'app:study:exam:recent:limit_' + #limit")
     public Result<List<ExamModel>> getRecentExam(int userId, int limit) {
+        //redis获取值
+        String redisKey = "hqx:app:study:exam:recent:limit_" + limit;
+        Result<List<ExamModel>> rs = (Result<List<ExamModel>>) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
         List<ExamModel> list = studyService.getExamByTime(userId, limit);
-        if(list == null) return Result.error();
-        return Result.success(list);
+        if(list == null) {
+            rs = Result.error();
+        } else {
+            rs = Result.success(list);
+        }
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 
     @RequestMapping(value = "/study/exam/special")
     @ResponseBody
-    @Cacheable(key="'app:study:exam:special:' + #label + ':num_'+ #num + '_limit_' + #limit")
     public Result<List<ExamModel>> getSpecialExam(int userId, int num, int limit, int label) {
+        //redis获取值
+        String redisKey = "hqx:app:study:exam:special:" + label + ":num_" + num + "_limit_" + limit;
+        Result<List<ExamModel>> rs = (Result<List<ExamModel>>) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
         List<ExamModel> list = studyService.getExamByLabel(userId, num, limit, label);
-        if(list == null) return Result.error();
-        return Result.success(list);
+        if(list == null) {
+            rs = Result.error();
+        } else {
+            rs = Result.success(list);
+        }
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 
     /**
@@ -378,12 +449,23 @@ public class StudyController {
      * */
     @RequestMapping(value = "/study/exam")
     @ResponseBody
-    @Cacheable(key="'app:study:exam:info:id_' + #id")
     public Result<ExamModel> getExam(int userId, int id) {
+        //redis获取值
+        String redisKey = "hqx:app:study:exam:info:id_" + id;
+        Result<ExamModel> rs = (Result<ExamModel>) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
         ExamModel model = studyService.getExamById(userId, id);
-        if(model == null) return Result.error();
-        historyService.insertHistory(userId, EModel.STUDY.getType(), EStudyPart.EXAM.getType(), id);
-        return Result.success(model);
+        if(model == null) {
+            rs = Result.error();
+        } else {
+            historyService.insertHistory(userId, EModel.STUDY.getType(), EStudyPart.EXAM.getType(), id);
+            rs = Result.success(model);
+        }
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 
     /**
@@ -392,52 +474,104 @@ public class StudyController {
      * */
     @RequestMapping(value = "/study/exam/content")
     @ResponseBody
-    @Cacheable(key="'app:study:exam:content:id_' + #id")
-    public Result<List<QuestionModel>> getExamContent(int userId, int id) {
-        List<QuestionModel> list = studyService.getExamContent(id);
-        if(list == null) return Result.error();
-        return Result.success(list);
+    public Result<List<ExamContentModel>> getExamContent(int userId, int id) {
+        //redis获取值
+        String redisKey = "hqx:app:study:exam:content:id_" + id;
+        Result<List<ExamContentModel>> rs = (Result<List<ExamContentModel>>) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
+        List<ExamContentModel> list = studyService.getExamContent(id);
+        if(list == null) {
+            rs = Result.error();
+        } else {
+            rs = Result.success(list);
+        }
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 // <--------------------------------------获取书籍------------------------------------------>
 
     @RequestMapping(value = "/study/book/hot")
     @ResponseBody
-    @Cacheable(key="'app:study:book:hot:limit_' + #limit")
     public Result<List<BookModel>> getHotBook(int userId, int limit) {
+        //redis获取值
+        String redisKey = "hqx:app:study:book:hot:limit_" + limit;
+        Result<List<BookModel>> rs = (Result<List<BookModel>>) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
         List<BookModel> list = studyService.getBookByCount(limit);
-        if(list == null) return Result.error();
-        return Result.success(list);
+        if(list == null) {
+            rs = Result.error();
+        } else {
+            rs = Result.success(list);
+        }
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 
     @RequestMapping(value = "/study/book/recent")
     @ResponseBody
-    @Cacheable(key="'app:study:book:recent:limit_' + #limit")
     public Result<List<BookModel>> getRecentBook(int userId, int limit) {
+        //redis获取值
+        String redisKey = "hqx:app:study:book:recent:limit_" + limit;
+        Result<List<BookModel>> rs = (Result<List<BookModel>>) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
         List<BookModel> list = studyService.getBookByTime(limit);
-        if(list == null) return Result.error();
-        return Result.success(list);
+        if(list == null) {
+            rs = Result.error();
+        } else {
+            rs = Result.success(list);
+        }
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 
     @RequestMapping(value = "/study/book/special")
     @ResponseBody
-    @Cacheable(key="'app:study:book:special:' + #label + ':num_'+ #num + '_limit_' + #limit")
     public Result<List<BookModel>> getSpecialBook(int userId, int num, int limit, int label) {
+        //redis获取值
+        String redisKey = "hqx:app:study:book:special:" + label + ":num_" + num + "_limit_" + limit;
+        Result<List<BookModel>> rs = (Result<List<BookModel>>) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
         List<BookModel> list = studyService.getBookByLabel(num, limit, label);
-        if(list == null) return Result.error();
-        return Result.success(list);
+        if(list == null) {
+            rs = Result.error();
+        } else {
+            rs = Result.success(list);
+        }
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 
     @RequestMapping(value = "/study/book")
     @ResponseBody
-    @Caching(evict = {
-            @CacheEvict(key="'history:book:userId_'+#userId")
-    })
-    @Cacheable( key="'app:study:book:info:id_' + #id")
     public Result<BookModel> getBook(int userId, int id) {
+        String redisKey = "hqx:app:study:book:info:id_" + id;
+        Result<BookModel> rs = (Result<BookModel>) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
         BookModel model = studyService.getBook(userId, id);
         historyService.insertHistory(userId, EModel.STUDY.getType(), EStudyPart.BOOK.getType(), id);
-        if(model == null) return Result.error();
-        return Result.success(model);
+        redisUtil.remove("hqx:history:book:userId_" + userId);
+
+        if(model == null) {
+            rs = Result.error();
+        } else {
+            rs = Result.success(model);
+        }
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 
 // <--------------------------------------获取电视------------------------------------------>
@@ -445,68 +579,132 @@ public class StudyController {
     /**
      * 个性化推荐
      * */
-    @RequestMapping(value = "/study/video/personal")
+    @RequestMapping(value = "/study/video/recommend")
     @ResponseBody
-    @Cacheable(key="'app:study:' + #part +':recommend:userId_' + #userId")
-    public Result<List<VideoModel>> getPersonalizedRecommendation(int userId, @IsVideoPart String part){
-        EStudyPart epart = EStudyPart.getEnumFromString(part.toUpperCase());
-        List<VideoModel> list = studyService.getVideoByCount(epart, 6);
+    public Result<List<VideoModel>> getPersonalizedRecommendation(int userId, @IsVideoPart String part, int limit){
+        List<VideoModel> list = null;
+        try {
+            list = (List<VideoModel>) redisUtil.get("hqx:app:study:" + part + ":recommend:userId_" + userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if(list == null || list.isEmpty()) {
+            return Result.error();
+        }
+        if(limit == 6) {
+            return Result.success(list.subList(0, 6));
+        }
         return Result.success(list);
     }
 
     //获取热门视频
     @RequestMapping(value = "/study/video/hot")
     @ResponseBody
-    @Cacheable(key="'app:study:' + #part +':hot:limit_' + #limit")
     public Result<List<VideoModel>> getHotVideo(int userId, @IsVideoPart String part, int limit) {
+        //redis获取值
+        String redisKey = "hqx:app:study:" + part + ":hot:limit_" + limit;
+        Result<List<VideoModel>> rs = (Result<List<VideoModel>>) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
         EStudyPart epart = EStudyPart.getEnumFromString(part.toUpperCase());
         List<VideoModel> list = studyService.getVideoByCount(epart, limit);
-        if(list == null) return Result.error();
-        return Result.success(list);
+        if(list == null) {
+            rs = Result.error();
+        } else {
+            rs = Result.success(list);
+        }
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 
     //获取最新视频
     @RequestMapping(value = "/study/video/recent")
     @ResponseBody
-    @Cacheable(key="'app:study:' + #part + ':recent:limit_' + #limit")
     public Result<List<VideoModel>> getRecentVideo(int userId, @IsVideoPart String part, int limit) {
+        //redis获取值
+        String redisKey = "hqx:app:study:" + part + ":recent:limit_" + limit;
+        Result<List<VideoModel>> rs = (Result<List<VideoModel>>) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
         EStudyPart epart = EStudyPart.getEnumFromString(part.toUpperCase());
         List<VideoModel> list = studyService.getVideoByTime(epart, limit);
-        if(list == null) return Result.error();
-        return Result.success(list);
+        if(list == null) {
+            rs = Result.error();
+        } else {
+            rs = Result.success(list);
+        }
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 
     //获取分类视频
     @RequestMapping(value = "/study/video/special")
     @ResponseBody
-    @Cacheable(key="'app:study:' + #part + ':special:' + #label + ':num_'+ #num + '_limit_' + #limit")
     public Result<List<VideoModel>> getSpecialVideo(int userId, @IsVideoPart String part, int num, int limit, int label) {
+        //redis获取值
+        String redisKey = "hqx:app:study:" + part + ":special" + label + ":num_" + num + "_limit_" + limit;
+        Result<List<VideoModel>> rs = (Result<List<VideoModel>>) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
         EStudyPart epart = EStudyPart.getEnumFromString(part.toUpperCase());
         List<VideoModel> list = studyService.getVideoByLabel(epart, num, limit, label);
-        if(list == null) return Result.error();
-        return Result.success(list);
+        if(list == null) {
+            rs = Result.error();
+        } else {
+            rs = Result.success(list);
+        }
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 
     //获取视频信息
     @RequestMapping(value = "/study/video")
     @ResponseBody
-    @Cacheable(key="'app:study:' + #part + ':info:id_' + #id")
     public Result<VideoModel> getVideo(int userId, @IsVideoPart String part, int id) {
+        //redis获取值
+        String redisKey = "hqx:app:study:" + part + ":info:id_" + id;
+        Result<VideoModel> rs = (Result<VideoModel>) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
         EStudyPart epart = EStudyPart.getEnumFromString(part.toUpperCase());
         VideoModel model = studyService.getVideo(userId, epart, id);
         historyService.insertHistory(userId, EModel.STUDY.getType(), epart.getType(), id);
-        if(model == null) return Result.error();
-        return Result.success(model);
+        if(model == null) {
+            rs = Result.error();
+        } else {
+            rs = Result.success(model);
+        }
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 
     //获取视频全部外链
     @RequestMapping(value = "/study/video/content")
     @ResponseBody
-    @Cacheable(key="'app:study:' + #part + ':content:id_' + #id")
     public Result<List<VideoContentModel>> getVideoContent(int userId, @IsVideoPart String part, int id) {
+        //redis获取值
+        String redisKey = "hqx:app:study:" + part + ":content:id_" + id;
+        Result<List<VideoContentModel>> rs = (Result<List<VideoContentModel>>) redisUtil.get(redisKey);
+        if(rs != null){
+            return rs;
+        }
+        //数据库获取值
         EStudyPart epart = EStudyPart.getEnumFromString(part.toUpperCase());
         List<VideoContentModel> list = studyService.getVideoContent(epart, id);
-        if(list == null) return Result.error();
-        return Result.success(list);
+        if(list == null) {
+            rs = Result.error();
+        } else {
+            rs = Result.success(list);
+        }
+        redisUtil.set(redisKey, rs);
+        return rs;
     }
 }

@@ -6,8 +6,8 @@ import java.io.Serializable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CountModel implements Serializable {
-    String time;
-    int count;
+    private String time;
+    private int count;
 
     public CountModel() {
     }

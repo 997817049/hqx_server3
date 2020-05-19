@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * 基地
+ * base
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BaseModel implements Serializable {

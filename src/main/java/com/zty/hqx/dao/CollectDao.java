@@ -22,17 +22,14 @@ public interface CollectDao {
     @Update("update collect set progress = '${progress}', update_time = now() where userId = #{userId} and modelId = #{model} and partId = #{part} and id = #{id}")
     void updateCollect(CollectModel collectModel);
 
-    @Delete("DELETE FROM collect WHERE userId = #{userId} and modelId = #{model} and id = #{id}")
-    void deleteBaseCollect(CollectModel collectModel);
-
     @Delete("DELETE FROM collect WHERE userId = #{userId} and modelId = #{model} and partId = #{part} and id = #{id}")
     void deleteCollect(CollectModel collectModel);
 
-    @Delete("DELETE FROM collect WHERE modelId = #{model} and id = #{id}")
-    void deleteAllBaseCollect(CollectModel collectModel);
+    @Delete("DELETE FROM collect WHERE modelId = 3 and id = #{id}")
+    void deleteAllBaseCollect(int id);
 
-    @Delete("DELETE FROM collect WHERE modelId = #{model} and partId = #{part} and id = #{id}")
-    void deleteAllCollect(CollectModel collectModel);
+    @Delete("DELETE FROM collect WHERE modelId = 1 and partId = #{part} and id = #{id}")
+    void deleteAllStudyCollect(CollectModel collectModel);
 
     @Select("SELECT exam.*, e_exam.*, collect.progress\n" +
             "FROM collect, exam, e_exam \n" +
@@ -74,19 +71,4 @@ public interface CollectDao {
             @Result(property = "htmlUrl", column = "html")
     })
     List<BaseModel> getAllBaseCollect(int userId);
-
-//    @Select("select count(*) from information_schema.TABLES t where t.TABLE_NAME ='user_collection_${userId}';")
-//    int tableIsExixt(int userId);
-//
-//    @Update("CREATE TABLE `user_collection_${userId}`(\n" +
-//            "\tno INT(11) auto_increment COMMENT '编号',\n" +
-//            "\tmodelId INT(11) NOT NULL COMMENT '模块',\n" +
-//            "\tpartId INT(11) NOT NULL COMMENT '模块',\n" +
-//            "\tid INT(11) NOT NULL COMMENT '收藏的信息id',\n" +
-//            "\tprogress text DEFAULT NULL COMMENT '进度',\n" +
-//            "\tcreate_time datetime DEFAULT null,\n" +
-//            "\tupdate_time timestamp COMMENT '默认为当前时间',\n" +
-//            "\tPRIMARY KEY (no)\n" +
-//            ")ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8")
-//    boolean creatTable(int userId);
 }

@@ -1,5 +1,8 @@
 package com.zty.hqx.util;
 
+import org.springframework.beans.factory.annotation.Value;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,6 +14,11 @@ public class ZtyUtil {
     private static final Calendar cal = Calendar.getInstance();
     private static final Random random = new Random();
     private static final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+//    @Value("${hqx.staticUrl}")
+    private static final String staticUrl = "http://49.4.114.114:81/hqx_static/";
+
+//    @Value("${hqx.absoluteStaticUrl}")
+    private static final String absoluteUrl = "/funyoo_project/hqx_app/hqx_static/";
 
     //生成名字
     public static String creatName(String orgName) {
@@ -28,13 +36,8 @@ public class ZtyUtil {
         return time + num;
     }
 
-    //将路径中的\换为/
-    public static String dealPathToSql(String path) {
-        return path.replaceAll("\\\\", "/");
-    }
-
     public static String dealSqlPathToFile(String path) {
-        return path.replaceAll("/", "\\\\");
+        return absoluteUrl + path.substring(staticUrl.length(), path.length());
     }
 
     public static String getLastWeek(){
@@ -47,6 +50,14 @@ public class ZtyUtil {
         Date d = cal.getTime();
         return df.format(d);
     }
+
+    public static String getLastWeek(String str) throws ParseException {
+        cal.setTime(df.parse(str));
+        cal.add(Calendar.DATE, - 7);
+        Date d = cal.getTime();
+        return df.format(d);
+    }
+
 
     public static String getYesterday(){
         return getYesterday(new Date());
@@ -70,12 +81,26 @@ public class ZtyUtil {
         return df.format(d);
     }
 
+    public static String getLastMonth(String str) throws ParseException {
+        cal.setTime(df.parse(str));
+        cal.add(Calendar.MONTH, - 1);
+        Date d = cal.getTime();
+        return df.format(d);
+    }
+
     public static String getLastYear(){
         return getLastYear(new Date());
     }
 
     public static String getLastYear(Date date){
         cal.setTime(date);
+        cal.add(Calendar.YEAR, - 1);
+        Date d = cal.getTime();
+        return df.format(d);
+    }
+
+    public static String getLastYear(String str) throws ParseException {
+        cal.setTime(df.parse(str));
         cal.add(Calendar.YEAR, - 1);
         Date d = cal.getTime();
         return df.format(d);

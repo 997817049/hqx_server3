@@ -7,6 +7,8 @@ import com.zty.hqx.dao.*;
 import com.zty.hqx.model.*;
 import com.zty.hqx.util.FileUtil;
 import com.zty.hqx.util.ZtyUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,9 +30,13 @@ public class StudyService {
     @Autowired
     UserDao userDao;
     @Autowired
+    CountDao countDao;
+    @Autowired
     CollectService collectService;
     @Autowired
     HistoryService historyService;
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 // <--------------------------------获取各个part的记录条数-------------------------------------------->
 
@@ -66,7 +72,7 @@ public class StudyService {
 
 // --------------------------------------------试题----------------------------------------------
 
-    public void updateExamContent(int id, QuestionModel model) {
+    public void updateExamContent(int id, ExamContentModel model) {
         if(null == examDao.getQuestion(id, model.getNum())){
             examDao.insertExamContent(id, model);
         } else {
@@ -98,8 +104,8 @@ public class StudyService {
         examDao.insertExam(model);
     }
 
-    public void insertExamContent(int id, List<QuestionModel> list){
-        for (QuestionModel model : list) {
+    public void insertExamContent(int id, List<ExamContentModel> list){
+        for (ExamContentModel model : list) {
             examDao.insertExamContent(id, model);
         }
     }
@@ -135,7 +141,7 @@ public class StudyService {
         return model;
     }
 
-    public List<QuestionModel> getExamContent(int id){
+    public List<ExamContentModel> getExamContent(int id){
         examDao.updateExamCount(id);
         return examDao.getExamContent(id);
     }
@@ -160,25 +166,33 @@ public class StudyService {
 // --------------------------------------------书籍----------------------------------------------
 
     public void updateBook(BookModel model) {
+        int id = model.getId();
+        BookModel oldBook = bookDao.getBook(id);
+        String oldPic = oldBook.getPicUrl();
+        if(!oldPic.equals(model.getPicUrl())){
+            //删除外链
+            deletePic(oldPic);
+        }
+        String oldFile = oldBook.getFileUrl();
+        if(!oldFile.equals(model.getFileUrl())){
+            //删除书籍
+            deleteBook(oldFile);
+        }
         bookDao.updateBook(model);
     }
 
     public void deleteBook(int id){
         BookModel model = bookDao.getBook(id);
+        //删除记录
         bookDao.deletebook(id);
-        String pic = model.getPicUrl();
-        try {
-            resourceDao.deletePic(pic);
-            FileUtil.deleteFile(ZtyUtil.dealSqlPathToFile(pic));
-        } catch (Exception e){
-        } finally {
-            String file = ZtyUtil.dealSqlPathToFile(model.getFileUrl());
-            FileUtil.deleteFile(file);
-            //删除全部收藏
-            collectService.deleteAllCollect(EModel.STUDY, EStudyPart.BOOK, id);
-            //删除全部历史记录
-            historyService.deleteAllHistory(EModel.STUDY.getType(), EStudyPart.BOOK.getType(), id);
-        }
+        //删除图片
+        deletePic(model.getPicUrl());
+        //删除书籍
+        deleteBook(model.getFileUrl());
+        //删除全部收藏
+        collectService.deleteAllCollect(EModel.STUDY, EStudyPart.BOOK, id);
+        //删除全部历史记录
+        historyService.deleteAllHistory(EModel.STUDY.getType(), EStudyPart.BOOK.getType(), id);
     }
 
     public void insertBook(BookModel model){
@@ -191,7 +205,8 @@ public class StudyService {
     }
 
     public List<BookModel> getBookByCount(int limit){
-        return bookDao.getBookByCount(limit);
+        String time = ZtyUtil.getYesterday();
+        return countDao.getBookHot(time, limit);
     }
 
     public List<BookModel> getBookByLabel(int num, int limit, int label){
@@ -226,15 +241,29 @@ public class StudyService {
 
 // ---------------------------------------视频----------------------------------------------
 
-    public void updateVideoContentNum(String part, int id, int oldNum, int newNum, String videoUrl) {
+    public void updateVideoContent(String part, int id, int oldNum, int newNum, String videoUrl) {
         if(oldNum == 0) {//插入
             videoDao.insertVideoContent(part, id, newNum, videoUrl);
-        } else {//更新
-            videoDao.updateVideoContentNum(part, id, oldNum, newNum, videoUrl);
+            return;
         }
+        //更新
+        VideoContentModel videoContentModel = videoDao.getVideoContentByNum(part,id, oldNum);
+        String oldVideo = videoContentModel.getVideoUrl();
+        if(!oldVideo.equals(videoUrl)){//更新视频
+            deleteVideo(oldVideo);
+        }
+        //更新集数
+        videoDao.updateVideoContent(part, id, oldNum, newNum, videoUrl);
     }
 
     public void updateVideo(String part, VideoModel model) {
+        int id = model.getId();
+        VideoModel oldVideo = videoDao.getVideo(part, id);
+        String oldPic = oldVideo.getPicUrl();
+        if(!oldPic.equals(model.getPicUrl())){
+            //删除外链
+            deletePic(oldPic);
+        }
         videoDao.updateVideo(part, model);
     }
 
@@ -243,39 +272,27 @@ public class StudyService {
         EStudyPart epart = EStudyPart.getEnumFromString(part.toUpperCase());
         VideoModel model = videoDao.getVideo(part, id);
         List<VideoContentModel> list = videoDao.getVideoContent(part, id);
+        System.out.println(list);
         //删除对应的全部视频
         for(VideoContentModel contentModel : list){
-            deleteVideoContent(part, id, contentModel);
+            deleteVideo(contentModel.getVideoUrl());
         }
+        //删除记录
+        videoDao.deleteVideoAllContent(part, id);
         videoDao.deleteVideo(part, id);
-        String pic = model.getPicUrl();
-        try {
-            resourceDao.deletePic(pic);
-            FileUtil.deleteFile(ZtyUtil.dealSqlPathToFile(pic));
-        } catch (Exception e){
-
-        }finally {
-            //删除全部收藏
-            collectService.deleteAllCollect(EModel.STUDY, epart, id);
-            //删除全部历史记录
-            historyService.deleteAllHistory(EModel.STUDY.getType(), epart.getType(), id);
-        }
+        //删除外链
+        deletePic(model.getPicUrl());
+        //删除全部收藏
+        collectService.deleteAllCollect(EModel.STUDY, epart, id);
+        //删除全部历史记录
+        historyService.deleteAllHistory(EModel.STUDY.getType(), epart.getType(), id);
     }
 
     //删除一个视频的某一集
     public void deleteVideoContent(String part, int id, int num){
-        VideoContentModel model = videoDao.getVideoContent2(part, id, num);
-        deleteVideoContent(part, id, model);
-    }
-
-    //删除一个视频的某一集
-    public void deleteVideoContent(String part, int id, VideoContentModel model){
+        VideoContentModel model = videoDao.getVideoContentByNum(part, id, num);
         String videoUrl = model.getVideoUrl();
-        try {
-            resourceDao.deleteVideo(videoUrl);//删除外链
-            videoUrl = ZtyUtil.dealSqlPathToFile(videoUrl);
-            FileUtil.deleteFile(videoUrl);//删资源
-        } catch (Exception e){}
+        deleteVideo(videoUrl);
         videoDao.deleteVideoContent(part, id, model.getNum());
     }
 
@@ -294,7 +311,8 @@ public class StudyService {
     }
 
     public List<VideoModel> getVideoByCount(EStudyPart part, int limit){
-        return videoDao.getVideoByCount(part.getEnglish(), limit);
+        String time = ZtyUtil.getYesterday();
+        return countDao.getVideoHot(part.getEnglish(), part.getType(), time, limit);
     }
 
     public List<VideoModel> getVideoByLabel(EStudyPart part, int num, int limit, int label){
@@ -311,11 +329,14 @@ public class StudyService {
 
     public VideoModel getVideo(int userId, EStudyPart part, int id){
         VideoModel model = videoDao.getVideo(part.getEnglish(), id);
-        System.out.println(model);
         if(model != null) {
             model = dealVideoModelCollect(userId, part, model);
         }
         return model;
+    }
+
+    public VideoModel manageGetVideo(String part, int id){
+        return videoDao.getVideo(part, id);
     }
 
     public List<VideoContentModel> getVideoContent(EStudyPart part, int id){
@@ -334,5 +355,40 @@ public class StudyService {
 
     private String dealCollect(int userId, EStudyPart part, int id){
         return collectService.isCollect(new CollectModel(userId, EModel.STUDY, part, id, null));
+    }
+
+    private void deletePic(String pic){
+        //删除图片
+        try {
+            resourceDao.deletePic(pic);
+            String path = ZtyUtil.dealSqlPathToFile(pic);
+            boolean rs = FileUtil.deleteFile(path);
+            logger.info("删除pic文件" + (rs ? "成功" : "失败") + "\n路径：" + path);
+        } catch (Exception ignored) {
+            logger.warn("删除pic外链异常");
+        }
+    }
+
+    private void deleteBook(String book){
+        //删除书籍
+        try {
+            resourceDao.deleteBook(book);
+            String path = ZtyUtil.dealSqlPathToFile(book);
+            boolean rs = FileUtil.deleteFile(path);
+            logger.info("删除book文件" + (rs ? "成功" : "失败") + "\n路径：" + path);
+        } catch (Exception ignored) {
+            logger.warn("删除book外链异常");
+        }
+    }
+
+    private void deleteVideo(String video){
+        try {
+            resourceDao.deleteVideo(video);//删除外链
+            String path = ZtyUtil.dealSqlPathToFile(video);
+            boolean rs = FileUtil.deleteFile(path);//删资源
+            logger.info("删除视频文件" + (rs ? "成功" : "失败") + "\n路径：" + path);
+        } catch (Exception ignored){
+            logger.warn("删除视频外链异常");
+        }
     }
 }

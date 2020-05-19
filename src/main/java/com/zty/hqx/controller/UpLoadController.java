@@ -1,10 +1,11 @@
 package com.zty.hqx.controller;
 
-import com.zty.hqx.annotation.IsMultipartFile;
+import com.zty.hqx.validator.IsMultipartFile;
 import com.zty.hqx.model.*;
 import com.zty.hqx.service.ResourceService;
 import com.zty.hqx.util.FileFactory;
 import com.zty.hqx.util.FileUtil;
+import com.zty.hqx.util.Md5Util;
 import com.zty.hqx.util.ZtyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import java.io.IOException;
-import java.sql.Date;
 import java.util.Objects;
 
 /**
@@ -32,16 +32,19 @@ public class UpLoadController {
 
     @Value("${hqx.staticUrl}")
     private String staticUrl;
-
     @Value("${hqx.absoluteStaticUrl}")
-    private String absolutePath;
+    private static String absoluteUrl;
 
     @Autowired
     ResourceService resourceService;
 
     /**
-     * 上传html
-     * @return 存储的相对路径
+     * 上传书籍
+     * todo 进行md5校验
+     * 随机生成相对路径，写入指定文件夹
+     * 生成路径 staticPath = staticUrl + relativePath
+     * 将staticPath存入数据库书籍资源表
+     * @return staticPath
      */
     @RequestMapping("/upload/book")
     @ResponseBody
@@ -50,55 +53,56 @@ public class UpLoadController {
                                      @RequestParam("book")
                                      @IsMultipartFile MultipartFile file) {
         logger.info("上传book");
-        //随机生成一个存储路径 相对路径
-        String path = "book\\" + ZtyUtil.creatName(Objects.requireNonNull(file.getOriginalFilename()));
-        //写入文件
+        String path = resourceService.isExistBook(md5);
+        if(path != null) return Result.success(path);
+
         try {
-            //相对路径 写入
-            FileUtil.write(path, file.getBytes());
+//            if(!md5(md5, file)){
+//                System.out.println("md5校验失败！");
+//                return Result.error();
+//            }
+            //随机生成一个存储路径 相对路径
+            String relativePath = "book/" + ZtyUtil.creatName(Objects.requireNonNull(file.getOriginalFilename()));
+            //相对路径 写入文件
+            FileUtil.write(relativePath, file.getBytes());
+            relativePath = staticUrl + relativePath;
             //数据库存入静态路径
-            path = staticUrl + ZtyUtil.dealPathToSql(path);
-            resourceService.insertBook(new ResourceModel(md5, path));
+            resourceService.insertBook(new ResourceModel(md5, relativePath));
+            return Result.success(relativePath);
         } catch (IOException e) {
-            path = null;
-        }
-//        返回绝对路径
-        if(path == null){
+            System.out.println("获取文件内容失败");
             return Result.error();
-        } else {
-            return Result.success(path);
         }
     }
 
     /**
      * 上传html
-     * @return 存储的相对路径
+     * 随机生成相对路径，写入指定文件夹
+     * @return staticUrl + 相对路径
      */
     @RequestMapping("/upload/html")
     @ResponseBody
     public Result<String> upLoadHtml(@RequestParam("html")String file) {
         logger.info("上传html");
         //随机生成一个存储路径
-        String htmlUrl = "htmls\\base\\" + ZtyUtil.getRandomName() + ".html";
+        String htmlUrl = "htmls/base/" + ZtyUtil.getRandomName() + ".html";
         //写入文件
         try {
             FileUtil.write(htmlUrl, file.getBytes());
             System.out.println("返回图片路径：" + htmlUrl);
-            htmlUrl = staticUrl + ZtyUtil.dealPathToSql(htmlUrl);
+            return Result.success(staticUrl + htmlUrl);
         } catch (IOException e) {
-            htmlUrl = null;
-        }
-        System.out.println("返回html路径：" + htmlUrl);
-        if(htmlUrl == null){
             return Result.error();
-        } else {
-            return Result.success(htmlUrl);
         }
     }
 
     /**
      * 上传图片
-     * @return 存储的相对路径
+     * todo 进行md5校验
+     * 随机生成相对路径，写入指定文件夹
+     * 生成路径 staticPath = staticUrl + relativePath
+     * 将staticPath存入数据库书籍资源表
+     * @return staticPath
      */
     @RequestMapping("/upload/pic")
     @ResponseBody
@@ -107,25 +111,23 @@ public class UpLoadController {
                                        @RequestParam("pic")
                                        @IsMultipartFile MultipartFile file) {
         logger.info("上传图片" + md5);
-        if(md5.length() < 32) return Result.error();
         String path = resourceService.isExistPic(md5);
-        if(path == null){
-            try {
-                path = "ztyImage\\" + ZtyUtil.creatName(Objects.requireNonNull(file.getOriginalFilename()));
-                FileUtil.write(path, file.getBytes());//在指定路径下写入文件 名称随机 返回存入路径
-                path = staticUrl + ZtyUtil.dealPathToSql(path);
-                //http://49.4.114.114:81/hqx_static/ztyImage/
-                resourceService.insertPic(new ResourceModel(md5, path));
-            } catch (IOException e) {
-                e.printStackTrace();
-                path = null;
-            }
-        }
-        System.out.println("返回图片路径：" + path);
-        if(path == null){
-            return Result.error();
-        } else {
+        if(path != null) {
+            logger.info("图片已存在：" + path);
             return Result.success(path);
+        }
+        try {
+//            if(!md5(md5, file)){
+//                System.out.println("md5校验失败！");
+//                return Result.error();
+//            }
+            path = "ztyImage/" + ZtyUtil.creatName(Objects.requireNonNull(file.getOriginalFilename()));
+            FileUtil.write(path, file.getBytes());//在指定路径下写入文件 名称随机 返回存入路径
+            path = staticUrl + path;
+            resourceService.insertPic(new ResourceModel(md5, path));
+            return Result.success(path);
+        } catch (IOException e) {
+            return Result.error();
         }
     }
 
@@ -143,7 +145,6 @@ public class UpLoadController {
                               @NotBlank(message = "md5value不为空") String md5value,
                               @IsMultipartFile MultipartFile file) {
         logger.info("收到视频《" + md5value + "(" + md5value + ")》的第" + chunk + "块文件");
-        if(md5value == null || md5value.length() < 32) return Result.error();
         String path = resourceService.isExistVideo(md5value);
         if(path != null) {
             System.out.println("视频已存在 路径" + path);
@@ -152,7 +153,7 @@ public class UpLoadController {
         FileModel fileModel = FileFactory.getFileModel(md5value);
         //存储正在传输列表
         if (fileModel == null) {
-            path = "video\\" + ZtyUtil.creatName(name);
+            path = "video/" + ZtyUtil.creatName(name);
             fileModel = new FileModel(chunks, md5value, path);
             FileFactory.setFileModel(md5value, fileModel);
         }
@@ -162,30 +163,32 @@ public class UpLoadController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //如果完整 则写入
-        if (fileModel.isFull()) {
-            logger.info("开始写入视频" + name);
-            //todo 做md5校验
-            //写入文件
-            try {
-                FileUtil.writeVideo(fileModel);
-                ResourceModel resourceModel = new ResourceModel(md5value, fileModel.getPath());
-                resourceService.insertVideo(resourceModel);
-                path = staticUrl + ZtyUtil.dealPathToSql(resourceModel.getUrl());
-            } catch (IOException e) {
-                e.printStackTrace();
-                path = null;
-            } finally {
-                FileFactory.removeFileModel(md5value);
-                logger.info("写入视频结束");
-            }
-        }
-        //http://49.4.114.114:81/hqx_static/video/
-        System.out.println("视频路径" + path);
-        if(path == null){
-            return Result.error();
-        } else {
+        //如果不完整则返回 完整 则写入
+        if(!fileModel.isFull()) return Result.success(null);
+
+        logger.info("开始写入视频" + name);
+        //todo 做md5校验
+        //写入文件
+        try {
+            FileUtil.writeVideo(fileModel);
+            ResourceModel resourceModel = new ResourceModel(md5value, staticUrl + fileModel.getPath());
+            resourceService.insertVideo(resourceModel);
+            path = staticUrl + resourceModel.getUrl();
             return Result.success(path);
+        } catch (IOException e) {
+            return Result.error();
+        } finally {
+            FileFactory.removeFileModel(md5value);
+            logger.info("写入视频结束");
         }
+    }
+
+    private boolean md5(String md5, MultipartFile file) throws IOException {
+        byte[] buffer;
+        buffer = file.getBytes();
+        //md5校验
+        String md52 = Md5Util.getFileMD5(buffer);
+        System.out.println(md52);
+        return md5.equals(md52);
     }
 }

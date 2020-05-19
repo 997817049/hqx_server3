@@ -2,9 +2,9 @@ package com.zty.hqx.classify;
 
 public enum EModel {
     SCHOOL(0, "校园", "school"),
-    STUDY(1, "学习", "study"),
+    STUDY(1, "study", "study"),
     NEWS(2, "新闻", "news"),
-    BASE(3, "基地", "base"),
+    BASE(3, "base", "base"),
     MY(4, "我的", "my");
 
     private int type;    //类型
