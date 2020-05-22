@@ -140,10 +140,12 @@ public class StudyController {
     public void updateExam(int id, String title, int label, int time) {
         ExamModel model = new ExamModel(id, title, new ClassifyModel(label), time);
         studyService.updateExam(model);
-        redisUtil.remove("hqx:manage:study:exam",
-                "hqx:app:study:exam:recent", "hqx:app:study:exam:special",
-                "hqx:app:study:exam:info:id_" + id,
-                "hqx:collect:study:exam", "hqx:search:study:exam");
+        redisUtil.removePattern("hqx:manage:study:exam*",
+                "hqx:app:study:exam:recent*",
+                "hqx:app:study:exam:special*",
+                "hqx:app:study:exam:info:id_" + id + "*",
+                "hqx:collect:study:exam*",
+                "hqx:search:study:exam*");
     }
 
     @RequestMapping("/update/study/book")
@@ -160,10 +162,14 @@ public class StudyController {
                            @RequestParam("file") String file){
         BookModel model = new BookModel(id, title, new ClassifyModel(label), author, synopsis, pic, file);
         studyService.updateBook(model);
-        redisUtil.remove("hqx:manage:study:book",
-                "hqx:app:study:book:hot","hqx:app:study:book:recent",
-                "hqx:app:study:book:special","hqx:app:study:book:info:id_" + id,
-                "hqx:collect:study:book", "hqx:search:study:book", "hqx:history:book");
+        redisUtil.removePattern("hqx:manage:study:book*",
+                "hqx:app:study:book:hot*",
+                "hqx:app:study:book:recent*",
+                "hqx:app:study:book:special*",
+                "hqx:app:study:book:info:id_" + id + "*",
+                "hqx:collect:study:book*",
+                "hqx:search:study:book*",
+                "hqx:history:book*");
     }
 
     @RequestMapping("/update/study/video")
@@ -180,10 +186,14 @@ public class StudyController {
                             @RequestParam("pic") String pic){
         VideoModel model = new VideoModel(id, title, new ClassifyModel(label), actor, num, synopsis, pic);
         studyService.updateVideo(part, model);
-        redisUtil.remove("hqx:manage:study:" + part,
-                "hqx:app:study:" + part + ":hot","hqx:app:study:" + part + ":recent",
-                "hqx:app:study:" + part + ":special","hqx:app:study:" + part + ":info:id_" + id,
-                "hqx:collect:study:" + part, "hqx:search:study:" + part, "hqx:history" + part);
+        redisUtil.removePattern("hqx:manage:study:" + part + "*",
+                "hqx:app:study:" + part + ":hot*",
+                "hqx:app:study:" + part + ":recent*",
+                "hqx:app:study:" + part + ":special*",
+                "hqx:app:study:" + part + ":info:id_" + id + "*",
+                "hqx:collect:study:" + part + "*",
+                "hqx:search:study:" + part + "*",
+                "hqx:history" + part + "*");
     }
 
     @RequestMapping("/update/study/exam/content")
@@ -218,7 +228,7 @@ public class StudyController {
                                   @NotNull @RequestParam("list") String list) {
         List<Integer> list1 = JSONArray.parseArray(list, Integer.class);
         studyService.deleteExamContent(id, list1);
-        redisUtil.remove("hqx:app:study:exam:content:id_" + id);
+        redisUtil.removePattern("hqx:app:study:exam:content:id_" + id);
         return Result.success(true);
     }
 
@@ -259,12 +269,13 @@ public class StudyController {
                 break;
             }
         }
-        redisUtil.remove("hqx:manage:study:" + part,
-                "hqx:app:study:" + part,"hqx:collect:study:" + part,
-                "hqx:search:study:" + part);
+        redisUtil.removePattern("hqx:manage:study:" + part + "*",
+                "hqx:app:study:" + part + "*",
+                "hqx:collect:study:" + part + "*",
+                "hqx:search:study:" + part + "*");
         //exam没有历史记录
         if(!part.equals("exam")){
-            redisUtil.remove("hqx:history" + part);
+            redisUtil.removePattern("hqx:history" + part + "*");
         }
         return true;
     }
@@ -336,9 +347,10 @@ public class StudyController {
         ExamModel model = new ExamModel(title, new ClassifyModel(label), time);
         studyService.insertExam(model);
         studyService.insertExamContent(model.getId(), list);
-        redisUtil.remove("hqx:manage:study:exam",
-                "hqx:app:study:exam:special:" + label, "hqx:app:study:exam:recent",
-                "hqx:search:study:exam");
+        redisUtil.removePattern("hqx:manage:study:exam*",
+                "hqx:app:study:exam:special:" + label + "*",
+                "hqx:app:study:exam:recent*",
+                "hqx:search:study:exam*");
     }
 
     @RequestMapping("/upload/study/book")
@@ -354,9 +366,11 @@ public class StudyController {
                            @RequestParam("file") String file){
         BookModel model = new BookModel(title, new ClassifyModel(label), author, synopsis, pic, file);
         studyService.insertBook(model);
-        redisUtil.remove("hqx:manage:study:book",
-                "hqx:app:study:book:hot", "hqx:app:study:book:special:" + label,
-                "hqx:app:study:book:recent", "hqx:search:study:book");
+        redisUtil.removePattern("hqx:manage:study:book*",
+                "hqx:app:study:book:hot*",
+                "hqx:app:study:book:special:" + label + "*",
+                "hqx:app:study:book:recent*",
+                "hqx:search:study:book*");
     }
 
     @RequestMapping("/upload/study/video")
@@ -376,9 +390,11 @@ public class StudyController {
         VideoModel model = new VideoModel(title, new ClassifyModel(label), actor, num, synopsis, pic);
         studyService.insertVideo(part, model);
         studyService.insertVideoContent(part, model.getId(), videoList);
-        redisUtil.remove("hqx:manage:study:" + part,
-                "hqx:app:study:" + part + ":hot", "hqx:app:study:" + part + ":special:" + label,
-                "hqx:app:study:" + part + ":recent", "hqx:search:study:" + part);
+        redisUtil.removePattern("hqx:manage:study:" + part + "*",
+                "hqx:app:study:" + part + ":hot*",
+                "hqx:app:study:" + part + ":special:" + label + "*",
+                "hqx:app:study:" + part + ":recent*",
+                "hqx:search:study:" + part + "*");
     }
 
 // <--------------------------------------获取试卷------------------------------------------>
@@ -503,7 +519,7 @@ public class StudyController {
             return rs;
         }
         //数据库获取值
-        List<BookModel> list = studyService.getBookByCount(limit);
+        List<BookModel> list = studyService.getBookByCount(userId, limit);
         if(list == null) {
             rs = Result.error();
         } else {
@@ -588,8 +604,11 @@ public class StudyController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        //数据库获取值
+        EStudyPart epart = EStudyPart.getEnumFromString(part.toUpperCase());
         if(list == null || list.isEmpty()) {
-            return Result.error();
+            list = studyService.getVideoByCount(epart, limit);
+            return Result.success(list);
         }
         if(limit == 6) {
             return Result.success(list.subList(0, 6));

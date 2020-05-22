@@ -73,20 +73,9 @@ public interface CountDao {
     })
     List<BaseModel> getBaseHot(String time, int limit);
 
-    @Select("SELECT book.* FROM count, book WHERE count.model = 1 AND count.part = 1 AND count.time = '${time}' AND count.id = book.id ORDER BY count.count LIMIT #{limit}")
-    @Results({@Result(property = "picUrl", column = "pic"),
-            @Result(property = "fileUrl", column = "file"),
-            @Result(property = "label.num", column = "num"),
-            @Result(property = "label.msg", column = "msg"),
-            @Result(property = "label.english", column = "english"),})
-    List<BookModel> getBookHot(String time, int limit);
+    @Select("SELECT id FROM count WHERE model = 1 AND part = 1 AND time = '${time}' ORDER BY count LIMIT #{limit}")
+    List<Integer> getBookHot(String time, int limit);
 
-    @Select("SELECT ${part}.* FROM count, ${part} WHERE count.model = 1 AND count.part = #{partNum} AND count.time = '${time}' AND count.id = ${part}.id ORDER BY count.count LIMIT #{limit}")
-    @Results({
-            @Result(property = "picUrl", column = "pic"),
-            @Result(property = "label.num", column = "e_${part}.num"),
-            @Result(property = "label.msg", column = "msg"),
-            @Result(property = "label.english", column = "english")
-    })
-    List<VideoModel> getVideoHot(String part, int partNum, String time, int limit);
+    @Select("SELECT id FROM count WHERE model = 1 AND part = #{partNum} AND time = '${time}' ORDER BY count LIMIT #{limit}")
+    List<Integer> getVideoHot(String part, int partNum, String time, int limit);
 }

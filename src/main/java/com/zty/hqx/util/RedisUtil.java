@@ -32,8 +32,9 @@ public class RedisUtil {
             ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
             operations.set(key, value);
             result = true;
+            logger.info("redis 存入 [" + key + "] 成功");
         } catch (Exception e) {
-            logger.warn("redis操作失败");
+            logger.warn("redis存入操作失败");
         }
         return result;
     }
@@ -64,25 +65,39 @@ public class RedisUtil {
     }
 
     /**
-     * 批量删除key
-     */
-    public void removePattern(final String pattern) {
-        Set<Serializable> keys = redisTemplate.keys(pattern);
-        if (keys.size() > 0) {
-            redisTemplate.delete(keys);
-        }
-    }
-
-    /**
      * 删除对应的value
      */
     public void remove(final String key) {
         if (exists(key)) {
             try {
                 redisTemplate.delete(key);
+                logger.info("redis 删除 [" + key + "] 成功");
             }  catch (Exception e) {
-                logger.warn("redis操作失败");
+                logger.warn("redis 删除 [" + key + "] 失败");
             }
+        } else {
+            logger.error("redis 删除 [" + key + "] 不存在");
+        }
+    }
+
+    /**
+     * 批量删除有指定前缀的key
+     */
+    public void removePattern(final String... patterns) {
+        for (String pattern : patterns) {
+            removePattern(pattern);
+        }
+    }
+
+    public void removePattern(final String pattern) {
+        try {
+            Set<Serializable> keys = redisTemplate.keys(pattern);
+            if (keys.size() > 0) {
+                redisTemplate.delete(keys);
+                logger.info("redis 删除 [" + pattern + "] 成功");
+            }
+        } catch (Exception e){
+            logger.info("redis 删除 [" + pattern + "] 失败");
         }
     }
 
@@ -106,8 +121,9 @@ public class RedisUtil {
         try {
             ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
             result = operations.get(key);
+            logger.info("从redis中获取数据 key = [" + key + "] \n result = " + result);
         } catch (Exception e){
-            logger.warn("redis操作失败");
+            logger.warn("从redis中获取数据失败");
         }
         return result;
     }

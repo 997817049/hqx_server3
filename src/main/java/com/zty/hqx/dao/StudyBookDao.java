@@ -54,7 +54,7 @@ public interface StudyBookDao {
             @Result(property = "label.english", column = "english"),})
     List<BookModel> getAllBookCount();
 
-    @Select("SELECT * FROM book, e_book WHERE e_book.num = book.label and id > #{num} ORDER BY id LIMIT #{limit}")
+    @Select("SELECT * FROM book, e_book WHERE e_book.num = book.label ORDER BY id LIMIT #{limit} OFFSET #{num}")
     @ResultMap(value = "BookMap")
     List<BookModel> getBookByNum(int num, int limit);
 

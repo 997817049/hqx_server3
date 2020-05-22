@@ -41,9 +41,13 @@ public class BaseController {
         //更新数据
         baseService.updateBase(baseModel);
         //删除缓存
-         redisUtil.remove("hqx:manage:base", "hqx:app:base:hot", "hqx:app:base:around",
-                "hqx:app:base:num", "hqx:app:base:content:id_" + id,
-                "hqx:collect:base:null", "hqx:search:base:null");
+         redisUtil.removePattern("hqx:manage:base*",
+                 "hqx:app:base:hot*",
+                 "hqx:app:base:around*",
+                "hqx:app:base:num*",
+                 "hqx:app:base:content:id_" + id + "*",
+                "hqx:collect:base:null*",
+                 "hqx:search:base:null*");
         return true;
     }
 
@@ -57,8 +61,8 @@ public class BaseController {
             baseService.deleteBase(id);
         }
         //删除缓存
-        redisUtil.remove("hqx:manage:base", "hqx:app:base",
-                "hqx:collect:base:null", "hqx:search:base:null");
+        redisUtil.removePattern("hqx:manage:base*", "hqx:app:base*",
+                "hqx:collect:base:null*", "hqx:search:base:null*");
     }
 
     /**
@@ -75,8 +79,11 @@ public class BaseController {
         //插入数据库
         baseService.insertBase(baseModel);
         //删除缓存
-        redisUtil.remove("hqx:manage:base", "hqx:app:base:hot", "hqx:app:base:around",
-                "hqx:app:base:num", "hqx:search:base:null");
+        redisUtil.removePattern("hqx:manage:base*",
+                "hqx:app:base:hot*",
+                "hqx:app:base:around*",
+                "hqx:app:base:num*",
+                "hqx:search:base:null*");
         return true;
     }
 
@@ -146,7 +153,7 @@ public class BaseController {
         if (key != null && !key.isEmpty()) {
             list = baseService.getBaseByKey(num, limit, key);
         } else {
-            list = baseService.getBase(num, limit);
+            list = baseService.getBaseByNum(num, limit);
         }
 
         JSONObject obj = new JSONObject();
@@ -163,7 +170,7 @@ public class BaseController {
 
     /**
      * app获取对应的base记录
-     * @param num      当前已查看的记录编号
+     * @param num 当前已查看的记录编号
      */
     @RequestMapping(value = "/base")
     @ResponseBody

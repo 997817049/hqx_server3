@@ -32,9 +32,7 @@ public class CountService {
      * */
     public List<HashMap<String, Integer>> getContrastCount(EStudyPart part, String time) throws ParseException {
         String[] nowTimeArr = getTime(time);//本次时间范围
-        System.out.println(time + ":" + nowTimeArr[0] + "**" + nowTimeArr[1]);
         String[] preTimeArr = getPreTime(nowTimeArr[0], time);//上次时间范围
-        System.out.println(time + ":" + preTimeArr[0] + "**" + preTimeArr[1]);
         HashMap<String, Integer> preMap = new HashMap<>();
         HashMap<String, Integer> nowMap = new HashMap<>();
 

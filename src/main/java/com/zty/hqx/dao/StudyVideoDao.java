@@ -79,7 +79,7 @@ public interface StudyVideoDao {
     List<VideoModel> getVideoByKey(String part, String key);
 
     @Select("SELECT ${part}.*, e_${part}.num as num1, e_${part}.msg, e_${part}.english " +
-            "FROM ${part}, e_${part} WHERE e_${part}.num = ${part}.label and id > #{num} ORDER BY id LIMIT #{limit}")
+            "FROM ${part}, e_${part} WHERE e_${part}.num = ${part}.label ORDER BY id LIMIT #{limit} OFFSET #{num}")
     @ResultMap(value = "VideoMap")
     List<VideoModel> getVideoById(String part, int num, int limit);
 

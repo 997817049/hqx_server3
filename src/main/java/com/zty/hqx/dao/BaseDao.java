@@ -54,6 +54,11 @@ public interface BaseDao {
     List<BaseModel> getBaseByAddress(String province, String city, int limit);
 
     @Select("SELECT id, title, pic, html, province, city, count " +
+            "FROM base ORDER BY id LIMIT #{limit} OFFSET #{num}")
+    @ResultMap(value = "baseMap")
+    List<BaseModel> getBaseByNum(int num, int limit);
+
+    @Select("SELECT id, title, pic, html, province, city, count " +
             "FROM base WHERE id > #{num} ORDER BY id LIMIT #{limit};")
     @ResultMap(value = "baseMap")
     List<BaseModel> getBase(int num, int limit);

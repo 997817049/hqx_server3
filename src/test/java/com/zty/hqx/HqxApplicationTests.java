@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.zty.hqx.classify.EModel;
 import com.zty.hqx.classify.EStudyPart;
+import com.zty.hqx.controller.CountController;
 import com.zty.hqx.dao.*;
 import com.zty.hqx.model.*;
 import com.zty.hqx.service.BaseService;
@@ -57,4 +58,11 @@ class HqxApplicationTests {
     @Autowired
     BaseService baseService;
 
+    @Autowired
+    CountController countController;
+    @Test
+    void test(){
+        countController.getCount("study", "teleplay", "year");
+    }
 }
+

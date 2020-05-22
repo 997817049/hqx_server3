@@ -1,5 +1,6 @@
-serverIp = "http://127.0.0.1:8888/";
-// nginxIp = "http://192.168.0.102:8000/resource/";
+serverIp = "http://49.4.114.114:8888/";
+// serverIp = "http://127.0.0.1:8888/";
+
 cityList = {};
 
 function getQueryVariable(variable) {
@@ -116,8 +117,9 @@ function dealDelList(checkStatus, part) {
         success: function (rs) {
             layer.msg("已删除");
             //重新渲染
+            var page = $(".layui-laypage-em").next().html();
             table.reload('demo', {
-                page: {curr: 1}
+                page: {curr: page}
             });
         },
         error: function () {

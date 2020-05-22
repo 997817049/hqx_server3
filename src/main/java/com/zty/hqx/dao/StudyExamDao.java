@@ -73,7 +73,7 @@ public interface StudyExamDao {
             @Result(property = "label.english", column = "english"),})
     List<ExamModel> getExamByTitle(String key, int num, int limit);
 
-    @Select("SELECT * FROM exam, e_exam WHERE e_exam.num = exam.label and id > #{num} ORDER BY id LIMIT #{limit}")
+    @Select("SELECT * FROM exam, e_exam WHERE e_exam.num = exam.label ORDER BY id LIMIT #{limit} OFFSET #{num}")
     @Results({@Result(property = "label.num", column = "num"),
             @Result(property = "label.msg", column = "msg"),
             @Result(property = "label.english", column = "english"),})

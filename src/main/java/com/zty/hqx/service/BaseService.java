@@ -120,6 +120,10 @@ public class BaseService {
         return baseDao.getBaseByAddress(province, city, limit);
     }
 
+    public List<BaseModel> getBaseByNum(int num, int limit) {
+        return baseDao.getBaseByNum(num, limit);
+    }
+
     public List<BaseModel> getBase(int num, int limit) {
         return baseDao.getBase(num, limit);
     }

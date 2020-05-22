@@ -206,7 +206,6 @@
         var html = editor.txt.html();
         var htmlFormData = new FormData();
         htmlFormData.set("html", html);
-        console.log("发送html");
         $.when(
             $.ajax({
                 type: "POST",
@@ -248,77 +247,26 @@
                 error: function () {}
             })
         ).then(function (value) {
-            upLoad();
+            $.ajax({
+                type: "POST",
+                url: serverIp + "upload/base", // 后端服务器上传地址
+                data: formData,
+                cache: false, // 是否缓存
+                async: true, // 是否异步执行
+                processData: false, // 是否处理发送的数据  (必须false才会避开jQuery对 formdata 的默认处理)
+                contentType: false, // 是否设置Content-Type请求头
+                success: function () {
+                    alert("上传数据成功 ");
+                    dealReset();
+                },
+                error: function () {
+                    //todo 恢复控件
+                    recoverParam();
+                }
+            });
         }, function (reason) {
             alert("上传失败");
             recoverParam();
-        });
-        // uploadPic();
-        // uploadHtml();
-        // upLoad();
-    }
-
-    function uploadPic() {
-        $.ajax({
-            type: "POST",
-            url: serverIp + "upload/pic", // 后端服务器上传地址
-            data: picFormData,
-            cache: false, // 是否缓存
-            async: true, // 是否异步执行
-            processData: false, // 是否处理发送的数据  (必须false才会避开jQuery对 formdata 的默认处理)
-            contentType: false, // 是否设置Content-Type请求头
-            success: function (rs) {
-                if(rs.num === 1){
-                    console.log("上传图片失败");
-                    return;
-                }
-                formData.set("pic", rs.data);
-                console.log("上传图片成功 路径：" + rs.data);
-            },
-            error: function () {
-            }
-        });
-    }
-
-    function uploadHtml() {
-        $.ajax({
-            type: "POST",
-            url: serverIp + "upload/html", // 后端服务器上传地址
-            data: htmlFormData,
-            cache: false, // 是否缓存
-            async: true, // 是否异步执行
-            processData: false, // 是否处理发送的数据  (必须false才会避开jQuery对 formdata 的默认处理)
-            contentType: false, // 是否设置Content-Type请求头
-            success: function (rs) {
-                if(rs.num === 1){
-                    console.log("上传html失败");
-                    return;
-                }
-                formData.set("html", rs.data);
-                console.log("上传html成功 路径：" + rs.data);
-            },
-            error: function () {}
-        });
-    }
-
-    //发送
-    function upLoad() {
-        $.ajax({
-            type: "POST",
-            url: serverIp + "upload/base", // 后端服务器上传地址
-            data: formData,
-            cache: false, // 是否缓存
-            async: true, // 是否异步执行
-            processData: false, // 是否处理发送的数据  (必须false才会避开jQuery对 formdata 的默认处理)
-            contentType: false, // 是否设置Content-Type请求头
-            success: function () {
-                alert("上传数据成功 ");
-                dealReset();
-            },
-            error: function () {
-                //todo 恢复控件
-                recoverParam();
-            }
         });
     }
 

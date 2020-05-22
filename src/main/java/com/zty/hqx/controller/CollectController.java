@@ -48,9 +48,11 @@ public class CollectController {
         if(model.equals("base")){
             redisUtil.remove("hqx:app:base:content:id_" + id);
         } else if(part.equals("exam")){
-            redisUtil.remove("hqx:app:study:exam:recent", "hqx:app:study:exam:special", "hqx:app:study:exam:info:id_" + id);
+            redisUtil.removePattern("hqx:app:study:exam:recent*",
+                    "hqx:app:study:exam:special*",
+                    "hqx:app:study:exam:info:id_" + id + "*");
         }
-        redisUtil.remove("hqx:collect:" + model + ":" + part + ":userId_" + userId);
+        redisUtil.removePattern("hqx:collect:" + model + ":" + part + ":userId_" + userId + "*");
         return Result.success(true);
     }
 
@@ -70,9 +72,11 @@ public class CollectController {
         if(model.equals("base")){
             redisUtil.remove("hqx:app:base:content:id_" + id);
         } else if(part.equals("exam")){
-            redisUtil.remove("hqx:app:study:exam:recent", "hqx:app:study:exam:special", "hqx:app:study:exam:info:id_" + id);
+            redisUtil.removePattern("hqx:app:study:exam:recent*",
+                    "hqx:app:study:exam:special*",
+                    "hqx:app:study:exam:info:id_" + id + "*");
         }
-        redisUtil.remove("hqx:collect:" + model + ":" + part + ":userId_" + userId);
+        redisUtil.removePattern("hqx:collect:" + model + ":" + part + ":userId_" + userId + "*");
     }
 
     /**

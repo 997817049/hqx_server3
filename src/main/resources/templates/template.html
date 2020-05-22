@@ -116,6 +116,24 @@
     </div>
     <ul>
         <li class="nav-item">
+            <a href="javascript:"><i class="my-icon nav-icon icon_1"></i><span>校园模块</span><i
+                    class="my-icon nav-more"></i></a>
+        </li>
+        <li class="nav-item">
+            <a href="javascript:"><i class="my-icon nav-icon icon_1"></i><span>学习模块</span><i
+                    class="my-icon nav-more"></i></a>
+            <ul>
+                <li><a th:href="@{/study/adm(part='exam')}"><span>答题</span></a></li>
+                <li><a th:href="@{/study/adm(part='book')}"><span>书籍</span></a></li>
+                <li><a th:href="@{/study/adm(part='teleplay')}"><span>电视</span></a></li>
+                <li><a th:href="@{/study/adm(part='film')}"><span>电影</span></a></li>
+                <li><a th:href="@{/study/adm(part='variety')}"><span>综艺</span></a></li>
+                <li><a th:href="@{/study/adm(part='documentary')}"><span>纪录片</span></a></li>
+                <li><a th:href="@{/study/adm(part='drama')}"><span>歌舞剧</span></a></li>
+                <li><a th:href="@{/study/label}"><span>标签设置</span></a></li>
+            </ul>
+        </li>
+        <li class="nav-item">
             <a href="javascript:"><i class="my-icon nav-icon icon_1"></i><span>新闻模块</span><i
                     class="my-icon nav-more"></i></a>
             <ul>
@@ -133,18 +151,8 @@
             </ul>
         </li>
         <li class="nav-item">
-            <a href="javascript:"><i class="my-icon nav-icon icon_1"></i><span>学习模块</span><i
+            <a href="javascript:"><i class="my-icon nav-icon icon_1"></i><span>设置模块</span><i
                     class="my-icon nav-more"></i></a>
-            <ul>
-                <li><a th:href="@{/study/adm(part='exam')}"><span>答题</span></a></li>
-                <li><a th:href="@{/study/adm(part='book')}"><span>书籍</span></a></li>
-                <li><a th:href="@{/study/adm(part='teleplay')}"><span>电视</span></a></li>
-                <li><a th:href="@{/study/adm(part='film')}"><span>电影</span></a></li>
-                <li><a th:href="@{/study/adm(part='variety')}"><span>综艺</span></a></li>
-                <li><a th:href="@{/study/adm(part='documentary')}"><span>纪录片</span></a></li>
-                <li><a th:href="@{/study/adm(part='drama')}"><span>歌舞剧</span></a></li>
-                <li><a th:href="@{/study/label}"><span>标签设置</span></a></li>
-            </ul>
         </li>
     </ul>
 </div>

@@ -35,6 +35,8 @@ public class StudyService {
     CollectService collectService;
     @Autowired
     HistoryService historyService;
+    @Autowired
+    StudyService studyService;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -204,9 +206,17 @@ public class StudyService {
         return bookDao.getBookByTime(limit);
     }
 
-    public List<BookModel> getBookByCount(int limit){
+    public List<BookModel> getBookByCount(int userId, int limit){
         String time = ZtyUtil.getYesterday();
-        return countDao.getBookHot(time, limit);
+        List<Integer> bookId = countDao.getBookHot(time, limit);
+        List<BookModel> list = new ArrayList<>();
+        for (int id : bookId){
+            BookModel model = studyService.getBook(userId, id);
+            if(model != null){
+                list.add(model);
+            }
+        }
+        return list;
     }
 
     public List<BookModel> getBookByLabel(int num, int limit, int label){
@@ -312,7 +322,15 @@ public class StudyService {
 
     public List<VideoModel> getVideoByCount(EStudyPart part, int limit){
         String time = ZtyUtil.getYesterday();
-        return countDao.getVideoHot(part.getEnglish(), part.getType(), time, limit);
+        List<Integer> videoId = countDao.getVideoHot(part.getEnglish(), part.getType(), time, limit);
+        List<VideoModel> list = new ArrayList<>();
+        for (int id : videoId){
+            VideoModel model = videoDao.getVideo(part.getEnglish(), id);
+            if(model != null){
+                list.add(model);
+            }
+        }
+        return list;
     }
 
     public List<VideoModel> getVideoByLabel(EStudyPart part, int num, int limit, int label){
@@ -324,7 +342,7 @@ public class StudyService {
     }
 
     public List<VideoModel> getVideoByNum(EStudyPart part, int num, int limit) {
-        return videoDao.getVideoById(part.getEnglish(),num, limit);
+        return videoDao.getVideoById(part.getEnglish(), num, limit);
     }
 
     public VideoModel getVideo(int userId, EStudyPart part, int id){
