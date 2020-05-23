@@ -45,14 +45,7 @@ public class CollectController {
             progress = "0";
         }
         collectService.setCollect(new CollectModel(userId, modelId, partId, id, progress));
-        if(model.equals("base")){
-            redisUtil.remove("hqx:app:base:content:id_" + id);
-        } else if(part.equals("exam")){
-            redisUtil.removePattern("hqx:app:study:exam:recent*",
-                    "hqx:app:study:exam:special*",
-                    "hqx:app:study:exam:info:id_" + id + "*");
-        }
-        redisUtil.removePattern("hqx:collect:" + model + ":" + part + ":userId_" + userId + "*");
+        dealRedis(userId, model, part, id);
         return Result.success(true);
     }
 
@@ -69,14 +62,7 @@ public class CollectController {
             partId = EStudyPart.getEnumFromString(part.toUpperCase()).getType();
         }
         collectService.deleteCollect(new CollectModel(userId, modelId, partId, id, null));
-        if(model.equals("base")){
-            redisUtil.remove("hqx:app:base:content:id_" + id);
-        } else if(part.equals("exam")){
-            redisUtil.removePattern("hqx:app:study:exam:recent*",
-                    "hqx:app:study:exam:special*",
-                    "hqx:app:study:exam:info:id_" + id + "*");
-        }
-        redisUtil.removePattern("hqx:collect:" + model + ":" + part + ":userId_" + userId + "*");
+        dealRedis(userId, model, part, id);
     }
 
     /**
@@ -107,4 +93,16 @@ public class CollectController {
         redisUtil.set(redisKey, rs);
         return rs;
     }
+
+    private void dealRedis(int userId, String model, String part, int id){
+        if(model.equals("base")){
+            redisUtil.remove("hqx:app:base:content:id_" + id);
+        } else if(part.equals("exam")){
+            redisUtil.removePattern("hqx:app:study:exam:recent*",
+                    "hqx:app:study:exam:special*");
+        }
+        redisUtil.removePattern("hqx:app:study:" + part + ":info:id_" + id + "*",
+                "hqx:collect:" + model + ":" + part + ":userId_" + userId + "*");
+    }
+
 }

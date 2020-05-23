@@ -695,7 +695,9 @@ public class StudyController {
         //数据库获取值
         EStudyPart epart = EStudyPart.getEnumFromString(part.toUpperCase());
         VideoModel model = studyService.getVideo(userId, epart, id);
+        //修改历史记录
         historyService.insertHistory(userId, EModel.STUDY.getType(), epart.getType(), id);
+        redisUtil.remove("hqx:history:" + part + ":" + userId + "*");
         if(model == null) {
             rs = Result.error();
         } else {
