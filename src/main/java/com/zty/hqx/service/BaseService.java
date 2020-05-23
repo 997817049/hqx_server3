@@ -4,7 +4,6 @@ import com.zty.hqx.classify.EModel;
 import com.zty.hqx.dao.*;
 import com.zty.hqx.model.BaseModel;
 import com.zty.hqx.model.CollectModel;
-import com.zty.hqx.model.User;
 import com.zty.hqx.util.FileUtil;
 import com.zty.hqx.util.ZtyUtil;
 import org.slf4j.Logger;
@@ -24,8 +23,6 @@ public class BaseService {
     ResourceDao resourceDao;
     @Autowired
     CountDao countDao;
-    @Autowired
-    UserDao userDao;
     @Autowired
     CollectService collectService;
     @Autowired
@@ -133,8 +130,6 @@ public class BaseService {
     }
 
     private BaseModel dealBaseCollect(int userId, BaseModel baseModel) {
-        User user = userDao.getUserById(userId);
-        if(user.getStatus() != 1) return baseModel;
         String progress = collectDao.isBaseCollect(new CollectModel(userId, EModel.BASE, null, baseModel.getId(), null));
         if(progress != null){
             baseModel.setCollect(true);

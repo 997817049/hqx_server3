@@ -55,7 +55,7 @@ public class CollectController {
      * */
     @RequestMapping(value = "/collect/cancel")
     @ResponseBody
-    public void cancelCollect(int userId, @IsModel String model, String part, int id) {
+    public Result<Boolean> cancelCollect(int userId, @IsModel String model, String part, int id) {
         int modelId = EModel.getEnumFromString(model.toUpperCase()).getType();
         int partId = 0;
         if(modelId == EModel.STUDY.getType()){
@@ -63,6 +63,7 @@ public class CollectController {
         }
         collectService.deleteCollect(new CollectModel(userId, modelId, partId, id, null));
         dealRedis(userId, model, part, id);
+        return Result.success(true);
     }
 
     /**
