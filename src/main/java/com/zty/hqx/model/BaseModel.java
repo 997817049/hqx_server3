@@ -5,9 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.Objects;
 
-/**
- * base
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BaseModel implements Serializable {
     private int id;//编号
@@ -36,28 +33,56 @@ public class BaseModel implements Serializable {
         return id;
     }
 
-    public String getPicUrl() {
-        return picUrl;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitle() {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getPicUrl() {
+        return picUrl;
+    }
+
+    public void setPicUrl(String picUrl) {
+        this.picUrl = picUrl;
+    }
+
     public String getHtmlUrl() {
         return htmlUrl;
+    }
+
+    public void setHtmlUrl(String htmlUrl) {
+        this.htmlUrl = htmlUrl;
     }
 
     public String getProvince() {
         return province;
     }
 
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
     public String getCity() {
         return city;
     }
 
+    public void setCity(String city) {
+        this.city = city;
+    }
+
     public int getCount() {
         return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 
     public boolean isCollect() {

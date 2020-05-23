@@ -1,9 +1,11 @@
 package com.zty.hqx.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.zty.hqx.classify.ECodeMsg;
 
 import java.io.Serializable;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Result<T> implements Serializable {
 
     private int code; //0成功

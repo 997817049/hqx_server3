@@ -1,13 +1,9 @@
 package com.zty.hqx.model;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
 
-/**
- * 书籍和电影
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BookModel implements Serializable {
     private int id;//编号
