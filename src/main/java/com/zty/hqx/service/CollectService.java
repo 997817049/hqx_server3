@@ -71,7 +71,7 @@ public class CollectService {
         switch (part){
             case EXAM:list2 = collectDao.getAllExamCollect(userId);break;
             case BOOK:list2 = collectDao.getAllBookCollect(userId);break;
-            default:list2 = collectDao.getAllVideoCollect(part.getEnglish(), userId);break;
+            default:list2 = collectDao.getAllVideoCollect(part.getEnglish(), part.getType(), userId);break;
         }
         return list2;
     }

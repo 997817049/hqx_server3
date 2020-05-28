@@ -53,7 +53,7 @@ public interface CollectDao {
 
     @Select("SELECT ${part}.*, e_${part}.*, collect.progress\n" +
             "FROM collect, ${part}, e_${part} \n" +
-            "WHERE e_${part}.num = ${part}.label and collect.userId = #{userId} and collect.modelId = 1 and collect.partId = 2 and collect.id = ${part}.id " +
+            "WHERE e_${part}.num = ${part}.label and collect.userId = #{userId} and collect.modelId = 1 and collect.partId = #{partId} and collect.id = ${part}.id " +
             "order by collect.create_time desc")
     @Results({
             @Result(property = "picUrl", column = "pic"),
@@ -61,7 +61,7 @@ public interface CollectDao {
             @Result(property = "label.msg", column = "msg"),
             @Result(property = "label.english", column = "english")
     })
-    List<VideoModel> getAllVideoCollect(String part, int userId);
+    List<VideoModel> getAllVideoCollect(String part, int partId, int userId);
 
     @Select("SELECT base.* \n" +
             "FROM collect, base WHERE collect.userId = #{userId} and collect.modelId = 3 AND collect.id = base.id " +
