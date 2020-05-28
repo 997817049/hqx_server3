@@ -55,12 +55,7 @@ public class UpLoadController {
         logger.info("上传book");
         String path = resourceService.isExistBook(md5);
         if(path != null) return Result.success(path);
-
         try {
-//            if(!md5(md5, file)){
-//                System.out.println("md5校验失败！");
-//                return Result.error();
-//            }
             //随机生成一个存储路径 相对路径
             String relativePath = "book/" + ZtyUtil.creatName(Objects.requireNonNull(file.getOriginalFilename()));
             //相对路径 写入文件
@@ -70,7 +65,7 @@ public class UpLoadController {
             resourceService.insertBook(new ResourceModel(md5, relativePath));
             return Result.success(relativePath);
         } catch (IOException e) {
-            System.out.println("获取文件内容失败");
+            logger.error("获取文件内容失败");
             return Result.error();
         }
     }
@@ -89,7 +84,7 @@ public class UpLoadController {
         //写入文件
         try {
             FileUtil.write(htmlUrl, file.getBytes());
-            System.out.println("返回图片路径：" + htmlUrl);
+            logger.info("返回图片路径：" + htmlUrl);
             return Result.success(staticUrl + htmlUrl);
         } catch (IOException e) {
             return Result.error();
@@ -117,10 +112,6 @@ public class UpLoadController {
             return Result.success(path);
         }
         try {
-//            if(!md5(md5, file)){
-//                System.out.println("md5校验失败！");
-//                return Result.error();
-//            }
             path = "ztyImage/" + ZtyUtil.creatName(Objects.requireNonNull(file.getOriginalFilename()));
             FileUtil.write(path, file.getBytes());//在指定路径下写入文件 名称随机 返回存入路径
             path = staticUrl + path;
@@ -181,14 +172,5 @@ public class UpLoadController {
             FileFactory.removeFileModel(md5value);
             logger.info("写入视频结束");
         }
-    }
-
-    private boolean md5(String md5, MultipartFile file) throws IOException {
-        byte[] buffer;
-        buffer = file.getBytes();
-        //md5校验
-        String md52 = Md5Util.getFileMD5(buffer);
-        System.out.println(md52);
-        return md5.equals(md52);
     }
 }

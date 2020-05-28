@@ -46,10 +46,10 @@ public interface CountDao {
     List<CountModel> getBaseCountByTime(String time1, String time2);
 
     //获取study中每个part的每个label的排行榜
-    @Select("SELECT ${part}.title FROM count, ${part} WHERE count.model = 1 AND count.part = #{partNum} AND count.label = #{label} AND count.time BETWEEN '${time1}' AND '${time2}' AND count.id = ${part}.id GROUP BY count.id ORDER BY SUM(count.count) DESC LIMIT 10")
+    @Select("SELECT ${part}.title FROM count, ${part} WHERE count.model = 1 AND count.part = #{partNum} AND ${part}.label = #{label} AND count.time BETWEEN '${time1}' AND '${time2}' AND count.id = ${part}.id GROUP BY count.id ORDER BY SUM(count.count) DESC LIMIT 10")
     List<String> getLabelTopChart(String part, int partNum, int label, String time1, String time2);
 
-    @Select("SELECT ${part}.title FROM count, ${part} WHERE count.model = 1 AND count.part = #{partNum} AND count.label = #{label} AND count.time BETWEEN '${time1}' AND '${time2}' AND count.id = ${part}.id GROUP BY count.id ORDER BY SUM(count.count) LIMIT 10")
+    @Select("SELECT ${part}.title FROM count, ${part} WHERE count.model = 1 AND count.part = #{partNum} AND ${part}.label = #{label} AND count.time BETWEEN '${time1}' AND '${time2}' AND count.id = ${part}.id GROUP BY count.id ORDER BY SUM(count.count) LIMIT 10")
     List<String> getLabelBottomChart(String part, int partNum, int label, String time1, String time2);
 
     //获取study中每个part的排行榜

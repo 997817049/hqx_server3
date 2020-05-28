@@ -213,19 +213,6 @@
 
     init();
     function init(){
-        //获取全部分类
-        // $.ajax({
-        //     type: "POST",
-        //     url: serverIp + "classify/study", // 后端服务器上传地址
-        //     data: {
-        //         part: part
-        //     },
-        //     async: false, // 是否异步执行
-        //     success: function (rs) {
-        //         classifyList = rs.data;
-        //     },
-        //     error: function () {}
-        // });
         series = getLabelSeries();
         $.when(
             //获取周排行榜

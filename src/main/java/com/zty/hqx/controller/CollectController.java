@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 处理全部收藏
@@ -91,7 +92,7 @@ public class CollectController {
         }
         String str = JSON.toJSONString(list);
         rs = Result.success(str);
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 

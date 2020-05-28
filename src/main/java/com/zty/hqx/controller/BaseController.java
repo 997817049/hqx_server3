@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.DecimalMin;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 @Validated
@@ -126,7 +127,7 @@ public class BaseController {
         } else {
             rs = Result.success(model);
         }
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -164,7 +165,7 @@ public class BaseController {
         obj.put("data", list);
         rs = obj.toJSONString();
         //存入数据库
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -185,7 +186,7 @@ public class BaseController {
         List<BaseModel> list = baseService.getBase(num, limit);
         rs = Result.success(list);
         //存入数据库
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -205,7 +206,7 @@ public class BaseController {
         List<BaseModel> list = baseService.getHotBase(limit);
         rs = Result.success(list);
         //存入数据库
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -225,7 +226,7 @@ public class BaseController {
         List<BaseModel> list = baseService.getBaseByAddress(province, city, limit);
         rs = Result.success(list);
         //存入数据库
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 

@@ -1,16 +1,10 @@
 package com.zty.hqx.controller;
 
-import com.zty.hqx.model.BaseModel;
 import com.zty.hqx.model.BookModel;
 import com.zty.hqx.model.Result;
 import com.zty.hqx.model.VideoModel;
 import com.zty.hqx.service.HistoryService;
-import com.zty.hqx.util.RedisUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,22 +18,12 @@ import java.util.List;
 public class HistoryController {
     @Autowired
     HistoryService historyService;
-    @Autowired
-    RedisUtil redisUtil;
 
     @RequestMapping(value = "/history/study/video")
     @ResponseBody
     public Result<List<VideoModel>> getVideoHistory(int userId, String part, int num, int limit) {
-        String redisKey = "hqx:history:" + part + ":" + userId + ":num_" + num + "_limit_" + limit;
-        //redis获取值
-        Result<List<VideoModel>> rs = (Result<List<VideoModel>>) redisUtil.get(redisKey);
-        if(rs != null){
-            return rs;
-        }
-        //数据库获取值
         List<VideoModel> list = historyService.getVideoHistory(userId, part, num, limit);
-        rs = Result.success(list);
-        redisUtil.set(redisKey, rs);
+        Result<List<VideoModel>> rs = Result.success(list);
         return rs;
     }
 
@@ -54,16 +38,8 @@ public class HistoryController {
     @RequestMapping(value = "/history/study/book")
     @ResponseBody
     public Result<BookModel> getRecentRead(int userId, int limit) {
-        String redisKey = "hqx:history:book:userId_" + userId;
-        //redis获取值
-        Result<BookModel> rs = (Result<BookModel>) redisUtil.get(redisKey);
-        if(rs != null){
-            return rs;
-        }
-        //数据库获取值
         BookModel bookModel = historyService.getBookHistory(userId, 0, limit);
-        rs = Result.success(bookModel);
-        redisUtil.set(redisKey, rs);
+        Result<BookModel> rs = Result.success(bookModel);
         return rs;
     }
 }

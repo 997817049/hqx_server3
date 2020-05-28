@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 public class SearchController {
@@ -89,7 +90,7 @@ public class SearchController {
             default: return Result.error();
         }
         rs = Result.success(str);
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 }

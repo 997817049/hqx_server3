@@ -20,6 +20,7 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 @Validated
@@ -112,7 +113,7 @@ public class StudyController {
         //数据库获取值
         List<ClassifyModel> list = classifyService.getClassify(part);
         rs = Result.success(list);
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -321,7 +322,7 @@ public class StudyController {
         obj.put("count", studyService.getPartsCount(epart));
         obj.put("data", list);
         rs = obj.toJSONString();
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -415,7 +416,7 @@ public class StudyController {
         } else {
             rs = Result.success(list);
         }
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -435,7 +436,7 @@ public class StudyController {
         } else {
             rs = Result.success(list);
         }
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -455,7 +456,7 @@ public class StudyController {
         } else {
             rs = Result.success(list);
         }
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -480,7 +481,7 @@ public class StudyController {
             historyService.insertHistory(userId, EModel.STUDY.getType(), EStudyPart.EXAM.getType(), id);
             rs = Result.success(model);
         }
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -504,7 +505,7 @@ public class StudyController {
         } else {
             rs = Result.success(list);
         }
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 // <--------------------------------------获取书籍------------------------------------------>
@@ -525,7 +526,7 @@ public class StudyController {
         } else {
             rs = Result.success(list);
         }
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -545,7 +546,7 @@ public class StudyController {
         } else {
             rs = Result.success(list);
         }
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -565,7 +566,7 @@ public class StudyController {
         } else {
             rs = Result.success(list);
         }
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -586,7 +587,7 @@ public class StudyController {
         } else {
             rs = Result.success(model);
         }
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -634,7 +635,7 @@ public class StudyController {
         } else {
             rs = Result.success(list);
         }
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -656,7 +657,7 @@ public class StudyController {
         } else {
             rs = Result.success(list);
         }
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -678,7 +679,7 @@ public class StudyController {
         } else {
             rs = Result.success(list);
         }
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -703,7 +704,7 @@ public class StudyController {
         } else {
             rs = Result.success(model);
         }
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -725,7 +726,7 @@ public class StudyController {
         } else {
             rs = Result.success(list);
         }
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 }

@@ -10,19 +10,15 @@ import com.zty.hqx.service.ClassifyService;
 import com.zty.hqx.service.CountService;
 import com.zty.hqx.service.StudyService;
 import com.zty.hqx.util.RedisUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 控制端 获取浏览量 生成统计图和榜单
@@ -55,7 +51,7 @@ public class CountController {
         }
         HashMap<String, List<String>> hashMap = countService.getChart(model, part, time, type);
         rs = Result.success(hashMap);
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -79,7 +75,7 @@ public class CountController {
             case STUDY: hashMap = countService.getStudyCount(part, time);break;
         }
         rs = Result.success(hashMap);
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 
@@ -105,7 +101,7 @@ public class CountController {
         } catch (ParseException e) {
             rs = Result.error();
         }
-        redisUtil.set(redisKey, rs);
+        redisUtil.set(redisKey, rs, 10L, TimeUnit.MINUTES);
         return rs;
     }
 }

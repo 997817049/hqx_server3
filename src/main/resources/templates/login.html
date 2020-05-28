@@ -7,6 +7,7 @@
     <script src="js/public.js"></script>
     <script src="js/jquery-3.2.1.min.js"></script>
     <script src="js/alert.js"></script>
+    <script src="js/md5.js"></script>
 </head>
 <style>
     *{margin: 0;padding: 0;}
@@ -35,12 +36,16 @@
 </body>
 <script>
     function dealLogin() {
+        var inputPass = $("#password").val();
+        var salt = "97funyoo23";
+        var str = "" + salt.charAt(5) + salt.charAt(0) + inputPass + salt.charAt(4) + salt.charAt(7);
+        var password = $.md5(str);
         $.ajax({
             url:serverIp + "/hqx/login",
             type:"POST",
             data:{
                 mail:$("#mail").val(),
-                password:$("#password").val()
+                password:password
             },
             success:function (rs) {
                 if(rs.code == 1){
@@ -48,7 +53,6 @@
                     $("#password").val("");
                     alert("账户名或密码错误");
                 } else {
-                    rs = rs.data;
                     window.location.href = serverIp + "base/adm";
                 }
             },

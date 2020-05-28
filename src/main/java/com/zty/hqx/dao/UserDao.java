@@ -32,6 +32,6 @@ public interface UserDao {
     @Select("SELECT * FROM user_information WHERE id = #{id}")
     User getUserById(@Param("id") Integer stuId);
 
-    @Select("SELECT * FROM user_information")
-    List<User> getAllUser();
+    @Select("SELECT id FROM user_information")
+    List<Integer> getAllUserId();
 }

@@ -360,8 +360,7 @@
                             processData: false, // 是否处理发送的数据  (必须false才会避开jQuery对 formdata 的默认处理)
                             contentType: false, // 是否设置Content-Type请求头
                             success: function (rs) {
-                                console.log("插入" + rs)
-                                editor.cmd.do("insertHTML", "<img style=\"width: 95%;height: 220px;margin-left: 2%;margin-top: 10px;\" src=\"" + rs + "\"/>")
+                                editor.cmd.do("insertHTML", "<img style=\"width: 95%;height: 220px;margin-left: 2%;margin-top: 10px;\" src=\"" + rs.data + "\"/>")
                             },
                             error: function () {
                             }
