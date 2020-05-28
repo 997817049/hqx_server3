@@ -283,7 +283,6 @@ public class TimerTask {
     private List<FavoriteWordModel> getOneVideoFavoriteList(int userId){
         List<VideoModel> videoList = new ArrayList<>();
         String time = ZtyUtil.getYesterday();
-//        String time = "2020-04-13";
         //历史记录
         for(int i = 2; i < 7; i++) {
             String part = EStudyPart.values()[i].getEnglish();
@@ -294,7 +293,7 @@ public class TimerTask {
 
             if(userId != 1) continue;
             //收藏
-            List<VideoModel> collectList = collectDao.getAllVideoCollect(part, userId);
+            List<VideoModel> collectList = collectDao.getAllVideoCollect(part, i, userId);
             if(collectList != null && !collectList.isEmpty()){
                 videoList.addAll(collectList);
             }
