@@ -10,10 +10,13 @@ import java.util.Map;
 @Mapper
 public interface CountDao {
 
+    //更新全部记录的浏览量，设置为0，重新开始记录
     @Update("UPDATE ${table} SET count = 0")
     boolean updateAllCount(String table);
 
-    @Insert("INSERT INTO count (model, part, label, id, time, count) VALUES (#{model}, #{part}, #{label}, #{id}, '${time}', #{count})")
+    //获取每条记录的浏览量，将其存入count表中
+    @Insert("INSERT INTO count (model, part, label, id, time, count) " +
+            "VALUES (#{model}, #{part}, #{label}, #{id}, '${time}', #{count})")
     boolean insertCount(int model, int part, int label, int id, String time, int count);
 
     //指定study下某个part的一段时间内每个label的总浏览量

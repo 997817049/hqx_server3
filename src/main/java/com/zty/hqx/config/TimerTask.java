@@ -56,7 +56,7 @@ public class TimerTask {
      * 清空每一项的浏览量
      * 每天1点执行
      * */
-//    @Scheduled(cron = "0 0 1 * * ? *")
+//    @Scheduled(cron = "0 0 0 1/1 * ?")
     private void statisticalCount() {
         System.err.println("执行静态定时任务时间: " + LocalDateTime.now());
         //base
@@ -117,7 +117,7 @@ public class TimerTask {
      * （一天中用户 有增减， 覆盖可能导致一部分删除的用户信息永远存在)
      * 每天1点执行
      * */
-    @Scheduled(cron = "0 0 0 1/1 * ?")
+    @Scheduled(cron = "0 0 1 1/1 * ?")
     void calFavoriteWord() {
         List<Integer> userIdList = userDao.getAllUserId();
         System.out.println("用户列表：" + userIdList);

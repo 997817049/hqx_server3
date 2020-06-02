@@ -12,12 +12,10 @@ public class UserService {
     UserDao userDao;
 
     public Integer doLogin(String mail, String password){
-        System.out.println(password);
         User user = userDao.getUserByMail(mail);
         if (user != null && user.getStatus() == 0) {
             String DBpass = user.getPassword();
             String pass = Md5Util.formPassToDBPass(password);
-            System.out.println(DBpass + "**" + pass);
             if (DBpass.equals(pass)) {
                 return user.getId();
             }

@@ -45,11 +45,6 @@ public class StudyController {
         return "study/add_video";
     }
 
-    @RequestMapping("/study/label")
-    public String addLabel(){
-        return "study/add_label";
-    }
-
     @RequestMapping("/study/exam_content/adm")
     public String admExamContent(int id, Model model){
         model.addAttribute("id", id);

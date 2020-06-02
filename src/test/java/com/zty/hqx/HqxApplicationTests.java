@@ -237,7 +237,7 @@ class HqxApplicationTests {
 
             if(userId != 1) continue;
             //收藏
-            List<VideoModel> collectList = collectDao.getAllVideoCollect(part, userId);
+            List<VideoModel> collectList = collectDao.getAllVideoCollect(part, i, userId);
             if(collectList != null && !collectList.isEmpty()){
                 videoList.addAll(collectList);
             }
@@ -263,5 +263,69 @@ class HqxApplicationTests {
         return TF_IDFUtil.getKeyWord(docList);
     }
 
+    private static final Random random = new Random();
+    private static final int min = 0;
+    private static final int max = 1000;
+
+    private static final Calendar cal = Calendar.getInstance();
+    private static final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
+    //添加数据库count
+    @Test
+    void count(){
+        System.out.println(df.format(new Date()));
+        cal.setTime(new Date());
+        for (int i = 0; i < 32; i++){
+            cal.add(Calendar.DATE, + 1);
+            Date d = cal.getTime();
+            System.out.println(df.format(d));
+        }
+    }
+    @Test
+    void oneDayCount(){
+        List<BaseModel> baseList = baseDao.getAllBaseCount();
+        List<ExamModel> examList = examDao.getAllExamCount();
+        List<BookModel> bookList = bookDao.getAllBookCount();
+        List<VideoModel> tvList = videoDao.getAllVideoCount(EStudyPart.TELEPLAY.getEnglish());
+        List<VideoModel> filmList = videoDao.getAllVideoCount(EStudyPart.FILM.getEnglish());
+        List<VideoModel> varietyList = videoDao.getAllVideoCount(EStudyPart.VARIETY.getEnglish());
+        List<VideoModel> documentaryList = videoDao.getAllVideoCount(EStudyPart.DOCUMENTARY.getEnglish());
+        List<VideoModel> dramaList = videoDao.getAllVideoCount(EStudyPart.DRAMA.getEnglish());
+        cal.setTime(new Date());
+        for (int i = 0; i < 32; i++){
+            cal.add(Calendar.DATE, + 1);
+            Date d = cal.getTime();
+            String time = df.format(d);
+            System.out.println("插入：" + time);
+            for(BaseModel model : baseList) {
+                countDao.insertCount(EModel.BASE.getType(), 0, 0, model.getId(), time, getRandom());
+            }
+            for(ExamModel model : examList) {
+                countDao.insertCount(EModel.STUDY.getType(), EStudyPart.EXAM.getType(), model.getLabel().getNum() , model.getId(), time,  getRandom());
+            }
+            for(BookModel model : bookList) {
+                countDao.insertCount(EModel.STUDY.getType(), EStudyPart.BOOK.getType(), model.getLabel().getNum() , model.getId(), time,  getRandom());
+            }
+            for(VideoModel model : tvList) {
+                countDao.insertCount(EModel.STUDY.getType(), EStudyPart.TELEPLAY.getType(), model.getLabel().getNum() , model.getId(), time,  getRandom());
+            }
+            for(VideoModel model : filmList) {
+                countDao.insertCount(EModel.STUDY.getType(), EStudyPart.FILM.getType(), model.getLabel().getNum() , model.getId(), time,  getRandom());
+            }
+            for(VideoModel model : varietyList) {
+                countDao.insertCount(EModel.STUDY.getType(), EStudyPart.VARIETY.getType(), model.getLabel().getNum() , model.getId(), time,  getRandom());
+            }
+            for(VideoModel model : documentaryList) {
+                countDao.insertCount(EModel.STUDY.getType(), EStudyPart.DOCUMENTARY.getType(), model.getLabel().getNum() , model.getId(), time,  getRandom());
+            }
+            for(VideoModel model : dramaList) {
+                countDao.insertCount(EModel.STUDY.getType(), EStudyPart.DRAMA.getType(), model.getLabel().getNum() , model.getId(), time,  getRandom());
+            }
+        }
+    }
+
+    private int getRandom(){
+        return random.nextInt(max) % (max - min + 1) + min;
+    }
 }
 

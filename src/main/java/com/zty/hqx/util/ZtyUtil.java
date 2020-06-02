@@ -14,10 +14,7 @@ public class ZtyUtil {
     private static final Calendar cal = Calendar.getInstance();
     private static final Random random = new Random();
     private static final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-//    @Value("${hqx.staticUrl}")
     private static final String staticUrl = "http://49.4.114.114:81/hqx_static/";
-
-//    @Value("${hqx.absoluteStaticUrl}")
     private static final String absoluteUrl = "/funyoo_project/hqx_app/hqx_static/";
 
     //生成名字
