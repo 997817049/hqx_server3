@@ -93,6 +93,7 @@ public class UserCFUtil {
 
     /**
      * 获取给指定用户对推荐的物品
+     * 计算指定用户recommendUser的物品推荐度
      * @return HashMap<String, Double>
      *     string  物品（此处指word 喜好词）
      *     double 物品的推荐程度
@@ -100,13 +101,17 @@ public class UserCFUtil {
      */
     public List<FavoriteWordModel> getRecommendLevel(int recommendUser){
         List<FavoriteWordModel> list = new ArrayList<>();
-        //计算指定用户recommendUser的物品推荐度
-        for(String item: items){//遍历每一件物品
-            Set<Integer> users = wordUserMap.get(item);//得到购买当前物品的所有用户集合
-            if(!users.contains(recommendUser)){//如果被推荐用户没有购买当前物品，则进行推荐度计算
+        //遍历每一件物品
+        for(String item: items){
+            //得到购买当前物品的所有用户集合
+            Set<Integer> users = wordUserMap.get(item);
+            //如果被推荐用户没有购买当前物品，则进行推荐度计算
+            if(!users.contains(recommendUser)){
                 double itemRecommendDegree = 0.0;
                 for(Integer user: users){
-                    itemRecommendDegree += sparseMatrix[userIndex.get(recommendUser)][userIndex.get(user)]/Math.sqrt(userWordMap.get(recommendUser).size()*userWordMap.get(user).size());//推荐度计算
+                    //推荐度计算
+                    itemRecommendDegree += sparseMatrix[userIndex.get(recommendUser)][userIndex.get(user)]
+                            /Math.sqrt(userWordMap.get(recommendUser).size()*userWordMap.get(user).size());
                 }
                 list.add(new FavoriteWordModel(item, itemRecommendDegree));
             }

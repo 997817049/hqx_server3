@@ -16,10 +16,10 @@ public interface HistoryDao {
     @Select("SELECT create_time FROM history WHERE userId = #{userId} and modelId = #{modelId} and partId = #{partId} and id = #{id}")
     String getOneHistory(int userId, int modelId, int partId, int id);
 
-    @Select("SELECT id FROM history WHERE userId = #{userId} and modelId = #{modelId} and partId = #{partId} ORDER BY create_time DESC LIMIT #{limit} OFFSET #{num}")
+    @Select("SELECT id FROM history WHERE userId = #{userId} and modelId = #{modelId} and partId = #{partId} ORDER BY update_time DESC LIMIT #{limit} OFFSET #{num}")
     List<Integer> getHistory(int userId, int modelId, int partId, int num, int limit);
 
-    @Select("SELECT id FROM history WHERE userId = #{userId} and modelId = #{modelId} and partId = #{partId} and create_time like '${time}%'")
+    @Select("SELECT id FROM history WHERE userId = #{userId} and modelId = #{modelId} and partId = #{partId} and update_time like '${time}%'")
     List<Integer> getHistoryByTime(int userId, int modelId, int partId, String time);
 
     @Update("update history set update_time = now() where userId = #{userId} and modelId = #{modelId} and partId = #{partId} and id = #{id}")
